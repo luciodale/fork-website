@@ -1,14 +1,26 @@
-(ns ^:figwheel-hooks fork.forms.frontend.main)
+(ns ^:figwheel-hooks fork.forms.frontend.main
+  (:require-macros
+   [fork.forms.frontend.hicada :refer [html]])
+  (:require [react-dom]))
 
-(js/console.log "Hello, world")
+(defn func []
+  (html
+   [:p "starting off with hooks"]))
+
+(defn body []
+  (html
+   [:*
+    [:div "body wrapper"]
+    [:> func nil]]))
+
+(defn mount
+  []
+  (let [section (js/document.getElementById "app")]
+    (react-dom/render (body) section)))
 
 ;; This is called once
-(defonce init
-  (do (set! (.-innerHTML (js/document.getElementById "app"))
-            "<p>Loaded forms!</p>
-            <p>Edit src/fork/forms/frontend/main.cljs to change this message.</p>")
-      true))
+(defonce init (mount))
 
 ;; This is called every time you make a code change
 (defn ^:after-load reload []
-  (set! (.-innerText (js/document.getElementById "app")) "Reloaded forms!"))
+  (mount))
