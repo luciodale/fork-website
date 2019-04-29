@@ -8,8 +8,6 @@
   juxt.edge/bidi.ig {:local/root "../lib/edge.ig.bidi"}
   integrant {:mvn/version "0.7.0"}
 
-  fork {:local/root "../lib/edge.fork.forms"}
-
   org.clojure/tools.logging {:mvn/version "0.5.0-alpha"}
   hicada {:mvn/version "0.1.8"}
   cljsjs/react {:mvn/version "16.8.3-0"}
