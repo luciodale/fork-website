@@ -11,15 +11,24 @@
      {:value true
       :disabled true}}))
 
+(defn on-submit
+  [evt values]
+  (.preventDefault evt)
+  (js/alert values))
+
 (defn fork []
   (html
    (let [{:keys [values
-                 handle-change]}
-         (fork/fork)]
+                 handle-change
+                 handle-on-submit]}
+         (fork/fork-form
+          {:on-submit on-submit})]
      (prn values)
-     [:div
+     [:form
+      {:on-submit handle-on-submit}
       [:input
-       {:name :keyword
+       {:name :input
+        :type "text"
         :on-change handle-change}]
       [:input
        {:name :check
@@ -31,4 +40,7 @@
         :on-change handle-change}]
       [:textarea
        {:name :area
-        :on-change handle-change}]])))
+        :on-change handle-change}]
+      [:button
+       {:type "submit"}
+       "My Submit button"]])))

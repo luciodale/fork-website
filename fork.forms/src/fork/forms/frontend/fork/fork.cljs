@@ -3,7 +3,7 @@
    [fork.logic :as logic]
    [react :as r]))
 
-(defonce state (atom nil))
+(defonce fork-state (atom nil))
 
 (defn- useLens
   [a f]
@@ -18,9 +18,11 @@
            (remove-watch a k)))))
     value))
 
-(defn fork
+(defn fork-form
   [& [{:keys [on-submit]}]]
-  (let [values (useLens state identity)]
+  (let [values (useLens fork-state identity)]
     {:handle-change
-     (logic/handle-change state)
+     (logic/handle-change fork-state)
+     :handle-on-submit
+     #(on-submit % values)
      :values values}))

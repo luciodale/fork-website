@@ -24,8 +24,8 @@
       (-> evt .-target .-value))))
 
 (defn handle-change
-  [state]
+  [fork-state]
   (fn [evt]
-    (swap! state assoc
+    (swap! fork-state assoc
            (element-name evt)
            (element-value evt))))
