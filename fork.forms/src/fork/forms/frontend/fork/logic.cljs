@@ -24,8 +24,12 @@
       (-> evt .-target .-value))))
 
 (defn handle-change
-  [fork-state]
+  [state]
   (fn [evt]
-    (swap! fork-state assoc
-           (element-name evt)
+    (swap! state assoc-in
+           [:values (element-name evt)]
            (element-value evt))))
+
+(defn set-submitting
+  [state bool]
+  (swap! state assoc :is-submitting? bool))

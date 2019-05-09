@@ -12,18 +12,22 @@
       :disabled true}}))
 
 (defn on-submit
-  [evt values]
+  [evt values set-submitting]
   (.preventDefault evt)
-  (js/alert values))
+  (js/setTimeout
+   #(do
+      (js/alert values)
+      (set-submitting false))
+   2000))
 
 (defn fork []
   (html
    (let [{:keys [values
+                 is-submitting?
                  handle-change
                  handle-on-submit]}
          (fork/fork-form
           {:on-submit on-submit})]
-     (prn values)
      [:form
       {:on-submit handle-on-submit}
       [:input
@@ -42,5 +46,8 @@
        {:name :area
         :on-change handle-change}]
       [:button
-       {:type "submit"}
-       "My Submit button"]])))
+       {:type "submit"
+        :disabled is-submitting?}
+       "My Submit button"]
+      [:a {:href "example"}
+       "click to go to example"]])))

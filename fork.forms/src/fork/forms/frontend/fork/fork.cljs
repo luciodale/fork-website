@@ -3,7 +3,7 @@
    [fork.logic :as logic]
    [react :as r]))
 
-(defonce fork-state (atom nil))
+(defonce state (atom nil))
 
 (defn- useLens
   [a f]
@@ -19,10 +19,21 @@
     value))
 
 (defn fork-form
-  [& [{:keys [on-submit]}]]
-  (let [values (useLens fork-state identity)]
-    {:handle-change
-     (logic/handle-change fork-state)
+  [{:keys [on-submit]}]
+  (let [deref-state (useLens state identity)
+        values (:values deref-state)
+        is-submitting? (:is-submitting? deref-state)
+        ]
+    (prn deref-state)
+    {:values values
+     :errors nil
+     :touched nil
+     :is-submitting? is-submitting?
+     :handle-change
+     (logic/handle-change state)
      :handle-on-submit
-     #(on-submit % values)
-     :values values}))
+     (fn [evt]
+       (logic/set-submitting state true)
+       (on-submit
+        evt values
+        (fn [bool] (logic/set-submitting state bool))))}))
