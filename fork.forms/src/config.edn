@@ -8,7 +8,7 @@
                                  :main fork.forms.frontend.main
                                  :output-to "public/frontend.js"
                                  :output-dir "public/frontend.out"
-                                 :asset-path "/frontend.out"
+                                 :asset-path "/assets/frontend.out"
                                  :optimizations #profile {:dev :none
                                                           :prod :advanced}}]
                        :figwheel-config
@@ -16,16 +16,15 @@
                         {:port 8900}}}}
 
  :ig.system/base
- {:fork.forms.foo/string "Hello, forms!"
-  [:edge.yada.ig/classpath-name :fork.forms/index] {:name "index.html"}
+ {[:edge.yada.ig/classpath-name :fork.forms/index] {:name "index.html"}
   [:edge.yada.ig/resources :fork.forms/assets] {:path "public/"}
   :edge.yada.ig/listener {:handler #ig/ref :edge.bidi.ig/vhost
                           :port 5454}
   :edge.bidi.ig/vhost [["http://localhost:5454"
                         [""
-                         [["/" #ig/ref [:fork.forms/index :edge.yada.ig/classpath-name]]
-                          ["/hello" #ig/ref :fork.forms.foo/string]
-                          ["" #ig/ref [:fork.forms/assets :edge.yada.ig/resources]]]]]]}
+                         [
+                          ["/assets" #ig/ref [:fork.forms/assets :edge.yada.ig/resources]]
+                          [true #ig/ref [:fork.forms/index :edge.yada.ig/classpath-name]]]]]]}
 
  :ig.system/dev
  {:edge.kick/builder #ref [:edge.kick/config]}
