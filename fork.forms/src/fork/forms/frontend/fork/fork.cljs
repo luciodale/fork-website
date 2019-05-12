@@ -3,37 +3,36 @@
    [fork.logic :as logic]
    [react :as r]))
 
-(defonce state (atom nil))
-
-(defn- useLens
-  [a f]
-  (let [[value update-value] (r/useState (f @a))]
-    (r/useEffect
-     (fn []
-       (let [k (gensym "useLens")]
-         (add-watch a k
-                    (fn [_ _ _ new-state]
-                      (update-value (f new-state))))
-         (fn []
-           (remove-watch a k)))))
-    value))
+(defn initiate-state
+  [{:keys [initial-values]}]
+  {:values initial-values})
 
 (defn fork-form
-  [{:keys [on-submit]}]
-  (let [deref-state (useLens state identity)
-        values (:values deref-state)
-        is-submitting? (:is-submitting? deref-state)
-        ]
-    (prn deref-state)
-    {:values values
-     :errors nil
-     :touched nil
-     :is-submitting? is-submitting?
-     :handle-change
-     (logic/handle-change state)
-     :handle-on-submit
-     (fn [evt]
-       (logic/set-submitting state true)
-       (on-submit
-        evt values
-        (fn [bool] (logic/set-submitting state bool))))}))
+  [{:keys [on-submit
+           initial-values
+           validation] :as props}]
+  (let [[state update-state]
+        (r/useState (initiate-state
+                     {:initial-values initial-values}))
+        is-submitting? (:is-submitting? state)
+        values (:values state)
+        props (merge props {:s state :u update-state})]
+    (when validation
+      (logic/effect-run-validation
+       update-state ((second validation) values)))
+    (prn state)
+    [{:values #(logic/values state %)
+      :errors (:errors state)
+      :dirty? (not= (:values state) initial-values)
+      :touched (:touched state)
+      :is-submitting? is-submitting?
+      :no-submit-on-enter
+      #(logic/no-submit-on-enter %)
+      :handle-change
+      #(logic/handle-change % props)
+      :clear-state
+      #(logic/clear-state props)
+      :handle-blur
+      #(logic/handle-blur % props)
+      :handle-on-submit
+      #(logic/handle-on-submit % on-submit props)}]))

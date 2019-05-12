@@ -6,4 +6,5 @@
   ["/"
    [["" :index]
     ["docs" :docs]
+    ["test" :test]
     ["example" :example]]])

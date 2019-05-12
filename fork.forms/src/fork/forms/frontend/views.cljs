@@ -4,6 +4,7 @@
   (:require
    [fork.forms.frontend.views.docs :as docs]
    [fork.forms.frontend.views.test :as test]
+   [fork.forms.frontend.views.tests :as tests]
    [react :as r]))
 
 (defn- useLens
@@ -27,5 +28,6 @@
      (case handler
        :index [:> test/fork nil]
        :docs [:> docs/view nil]
+       :test [:> tests/view nil]
        :example [:div "welcome to examples"]
        [:div "nothing found"]))))
