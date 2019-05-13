@@ -23,7 +23,10 @@
          clear-state]}]
   (.preventDefault evt)
   (if errors?
-    (js/alert "shoot")
+    (do
+      (js/setTimeout
+       #(set-values {:input "hello"})
+       500))
     (js/setTimeout
      #(do
         (js/alert values)
@@ -53,7 +56,7 @@
                   handle-on-submit]}]
          (fork/fork-form
           {:on-submit on-submit
-           :validation [:on-blur validation-schema]
+           :validation [:on-change validation-schema]
            :initial-values
            {:input "bellaa"
             }})]

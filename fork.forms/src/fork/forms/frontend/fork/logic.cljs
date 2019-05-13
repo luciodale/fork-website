@@ -24,13 +24,31 @@
   [u bool]
   (u #(assoc % :is-submitting? bool)))
 
-(defn set-touched
+(defn run-validation
+  "schema: {:one [[true 'error msg'][true 'error 2']]
+            :two [[false 'error msg']]}
+  Loop over the input keys and nested vectors to update
+  the :errors key in the state. A true value implies that
+  the input is error free."
   [u schema]
-  (u #(merge (:touched %) schema)))
+  (doseq [[input-key cond-coll] schema
+          [bool msg] cond-coll]
+    (if bool
+      (u #(update-in % [:errors input-key]
+                     (fn [ers] (not-empty (disj ers msg)))))
+      (u #(update-in % [:errors input-key]
+                     (fnil conj #{}) msg)))))
+
+(defn set-touched
+  [u m]
+  (u #(update % :touched merge m)))
 
 (defn set-values
-  [u schema]
-  (u #(merge (:values %) schema)))
+  [u {[action schema] :validation} m]
+  (u #(update % :values merge m))
+  (when (= action :on-change)
+    (doseq [[k v] m]
+      (run-validation u {k (k (schema {k v}))}))))
 
 (defn values
   "API:
@@ -54,20 +72,6 @@
   (when (= (.-key evt) "Enter")
     (.preventDefault evt)))
 
-(defn run-validation
-  "schema: {:one [[true 'error msg'][true 'error 2']]
-            :two [[false 'error msg']]}
-  Loop over the input keys and nested vectors to update
-  the :errors key in the state. A true value implies that
-  the input is error free."
-  [u schema]
-  (doseq [[input-key cond-coll] schema
-          [bool msg] cond-coll]
-    (if bool
-      (u #(update-in % [:errors input-key]
-                     (fn [ers] (not-empty (disj ers msg)))))
-      (u #(update-in % [:errors input-key]
-                     (fnil conj #{}) msg)))))
 
 (defn effect-run-validation
   "Run validation on component-did-mount.
@@ -117,7 +121,7 @@
       (u #(assoc-in % [:touched (keyword k)] true)))))
 
 (defn handle-on-submit
-  [evt on-submit {u :u s :s}]
+  [evt on-submit {u :u s :s :as props}]
   (set-submitting u true)
   (touch-all evt u)
   (on-submit
@@ -128,7 +132,7 @@
     :set-touched
     #(set-touched u %)
     :set-values
-    #(set-values u %)
+    #(set-values u props %)
     :set-submitting
     #(set-submitting u %)
     :clear-state
@@ -136,4 +140,6 @@
 
 
 (comment
-  "- set-error to allow a server error?")
+  "- set-global-error to allow a server error
+   - don't add it in :errors but create new key
+   - remember to clean :global-errors at each submit")
