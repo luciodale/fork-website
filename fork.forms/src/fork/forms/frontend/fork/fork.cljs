@@ -15,13 +15,12 @@
         (r/useState (initiate-state
                      {:initial-values initial-values}))
         is-submitting? (:is-submitting? state)
-        values (:values state)
         props (merge props {:s state :u update-state})]
     (when validation
       (logic/effect-run-validation
-       update-state ((second validation) values)))
+       update-state ((second validation) (:values state))))
     (prn state)
-    [{:values #(logic/values state %)
+    [{:values (:values state)
       :errors (:errors state)
       :dirty? (not= (:values state) initial-values)
       :touched (:touched state)

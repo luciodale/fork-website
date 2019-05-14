@@ -50,19 +50,6 @@
     (doseq [[k v] m]
       (run-validation u {k (k (schema {k v}))}))))
 
-(defn values
-  "API:
-  Retrieve one input or all input values.
-  If nil is observed when retrieving one input,
-  '' is returned instead. (js complains about nil input values)"
-  [state input]
-  (cond
-    input
-    ((fnil identity "")
-     (-> state :values input))
-    :else
-    (-> state :values)))
-
 (defn clear-state
   [{u :u}]
   (u nil))
@@ -142,4 +129,9 @@
 (comment
   "- set-global-error to allow a server error
    - don't add it in :errors but create new key
-   - remember to clean :global-errors at each submit")
+   - remember to clean :global-errors at each submit"
+
+  "Consider mapping over the form nodes in the initial
+  effect on did mount rather than in submit. Nope.
+  If some form element is generated on the fly, they
+  won't be picked up on component-did-mount")
