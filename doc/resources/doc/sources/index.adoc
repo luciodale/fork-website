@@ -12,19 +12,30 @@ This is the place to start!
 
 . link:https://clojure.org/guides/getting_started[Install clj] (<<windows.adoc#,Additional notes for installing on Windows>>)
 . <<editor.adoc#,Set up your editor for Clojure>>
-. <<setup.adoc#,Set up Edge for your project>>
-. <<dev-guide.adoc#,Developing on Edge>>
+. <<setup.adoc#,Edge setup guide>>
 
 == Using Edge
 
-//. Configuration
-//. Components
-* <<dev-guide.adoc#,Developing on Edge>>
+* <<dev-guide.adoc#,Development Guide>>
+* <<configuration-components.adoc#,Configuration and Components>>
+* <<lifecycle.adoc#,Lifecycle of an Edge project>>
+* <<documentation.adoc#,Documenting your Edge>>
+
+=== Edge built-in libraries
+
+* <<built-in-libraries.adoc#yada,Yada>> (RESTful Web Server)
+* <<built-in-libraries.adoc#bidi,Bidi>> (Web Router)
+* <<built-in-libraries.adoc#lib.app,lib.app>> (Common functionality for applications)
+* <<built-in-libraries.adoc#lib.app.dev,lib.app.dev>> (Common developer functionality for applications)
+* <<built-in-libraries.adoc#lib.app.prod,lib.app.prod>> (Common production functionality for applications)
+* <<built-in-libraries.adoc#crux.ig,crux.ig>> (Integrate crux with integrant)
+
+=== Production guides
+
 * <<uberjar.adoc#,Producing an Uberjar>>
 * <<elastic-beanstalk.adoc#,Using the Elastic Beanstalk Quickstart>>
 * <<socket-repl.adoc#,Setting up a socket REPL>>
-* <<maintenance.adoc#,Maintaining Edge>>
-* <<documentation.adoc#,Documenting your Edge>>
+* <<built-in-libraries.adoc#lib.app.prod,Production library guide>> (e.g. the provided `edge.main`)
 
 == The Edge Project
 
