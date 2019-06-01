@@ -17,6 +17,9 @@
 
  :ig.system/base
  {[:edge.yada.ig/classpath-name :fork.forms/index] {:name "index.html"}
+  [:fork.forms/scripts :edge.yada.ig/resources] {:path "scripts/"}
+  [:fork.forms/images :edge.yada.ig/resources] {:path "images/"}
+  [:fork.forms/styles :edge.yada.ig/resources] {:path "styles/"}
   [:edge.yada.ig/resources :fork.forms/assets] {:path "public/"}
   :edge.yada.ig/listener {:handler #ig/ref :edge.bidi.ig/vhost
                           :port 5454}
@@ -24,6 +27,9 @@
                         [""
                          [
                           ["/assets" #ig/ref [:fork.forms/assets :edge.yada.ig/resources]]
+                          ["/scripts" #ig/ref [:fork.forms/scripts :edge.yada.ig/resources]]
+                          ["/images" #ig/ref [:fork.forms/images :edge.yada.ig/resources]]
+                          ["/styles" #ig/ref [:fork.forms/styles :edge.yada.ig/resources]]
                           [true #ig/ref [:fork.forms/index :edge.yada.ig/classpath-name]]]]]]}
 
  :ig.system/dev

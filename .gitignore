@@ -4,6 +4,8 @@
 **/target/*/**
 **/log/*
 !**/target/*/.gitkeep
+**/bulma/**
+**/scripts/**
 
 # pack'd output
 /*.jar

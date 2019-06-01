@@ -20,35 +20,67 @@
       (-> evt .-target .-checked)
       (-> evt .-target .-value))))
 
+(defn nodes-name [props]
+  (reduce
+   (fn [coll node]
+     (let [node-name (.-name node)]
+       (if-not (empty? node-name)
+         (assoc coll (keyword node-name) node-name)
+         coll)))
+   {}
+   (.values
+    js/Object
+    (.-elements
+     (js/document.getElementById (:form-id props))))))
+
 (defn set-submitting
   [u bool]
   (u #(assoc % :is-submitting? bool)))
 
+(defn set-global-errors
+  "Add errors coming from the external world.
+  Those might be for example a bad server response.
+  The errors are set under the key :global-errors and
+  subsequently under the error message key itself.
+  The global errors are dissoced from the state on each
+  new submit."
+  [u errors]
+  (doseq [[k error] errors]
+    (u #(assoc-in % [:global-errors k] error))))
+
+(defn- clear-global-errors
+  [u]
+  (u #(dissoc % :global-errors)))
+
 (defn run-validation
-  "schema: {:one [[true 'error msg'][true 'error 2']]
-            :two [[false 'error msg']]}
+  "schema: {:one [[true {:er1 'error 1'}
+                  [true {:er2 'error 2'}]]]
+            :two [[false {:er1 'error 1'}]]
   Loop over the input keys and nested vectors to update
-  the :errors key in the state. A true value implies that
-  the input is error free."
-  [u schema]
+  the :errors and :errors-key keys in the state. A true value implies that
+  the input is error free. Error keys must be unique per
+  per input key"
+  [{s :s u :u} schema]
   (doseq [[input-key cond-coll] schema
-          [bool msg] cond-coll]
-    (if bool
+          [bool msg] cond-coll
+          :let [err-key (ffirst msg)]]
+    (cond
+      bool
       (u #(update-in % [:errors input-key]
-                     (fn [ers] (not-empty (disj ers msg)))))
-      (u #(update-in % [:errors input-key]
-                     (fnil conj #{}) msg)))))
+                     (fn [m] (not-empty (dissoc m err-key)))))
+      :else
+      (u #(assoc-in % [:errors input-key err-key] (err-key msg))))))
 
 (defn set-touched
   [u m]
   (u #(update % :touched merge m)))
 
 (defn set-values
-  [u {[action schema] :validation} m]
+  [u {[action schema] :validation :as props} m]
   (u #(update % :values merge m))
   (when (= action :on-change)
     (doseq [[k v] m]
-      (run-validation u {k (k (schema {k v}))}))))
+      (run-validation props {k (k (schema {k v}))}))))
 
 (defn clear-state
   [{u :u}]
@@ -59,15 +91,15 @@
   (when (= (.-key evt) "Enter")
     (.preventDefault evt)))
 
-
+;; Run this shit whenever the number of form elements change!!!
 (defn effect-run-validation
   "Run validation on component-did-mount.
   It ensures the schema is validated when submit
   is fired without touching any input"
-  [u evaluated-schema]
+  [props evaluated-schema]
   (r/useEffect
    (fn []
-     (run-validation u evaluated-schema)
+     (run-validation props evaluated-schema)
      identity)
    #js []))
 
@@ -76,46 +108,45 @@
   Set the new input value.
   When the validation is fired on-change, run-validation
   is called with only the relevant input schema."
-  [evt {u :u [action schema] :validation}]
+  [evt {u :u [action schema] :validation :as props}]
   (let [k (element-name evt)
         v (element-value evt)]
     (u #(assoc-in % [:values k] v))
     (when (= action :on-change)
-      (run-validation u {k (k (schema {k v}))}))))
+      (run-validation props {k (k (schema {k v}))}))))
 
 (defn handle-blur
   "API:
   Set the input to touched.
   Run the validation when :on-blur is true"
-  [evt {u :u [action schema] :validation}]
+  [evt {u :u [action schema] :validation :as props}]
   (let [k (element-name evt)
         v (element-value evt)]
     (u #(assoc-in % [:touched k] true))
     (when (= action :on-blur)
-      (run-validation u {k (k (schema {k v}))}))))
+      (run-validation props {k (k (schema {k v}))}))))
 
 (defn touch-all
   "Set all inputs to touched true.
   The input names are retrieved from the form node
   rather than the state because they might not have
   been set yet on submit."
-  [evt u]
-  (let [input-nodes (.values
-                     js/Object
-                     (-> evt .-target .-elements))
-        input-keys (mapv #(.-name %) input-nodes)]
-    (doseq [k (remove empty? input-keys)]
-      (u #(assoc-in % [:touched (keyword k)] true)))))
+  [props u]
+  (doseq [[k _] (nodes-name props)]
+    (u #(assoc-in % [:touched k] true))))
 
 (defn handle-on-submit
   [evt on-submit {u :u s :s :as props}]
   (set-submitting u true)
-  (touch-all evt u)
+  (touch-all props u)
+  (clear-global-errors u)
   (on-submit
    evt
    {:errors? (some some? (vals (:errors s)))
     :values (:values s)
     :dirty? nil ;TODO
+    :set-global-errors
+    #(set-global-errors u %)
     :set-touched
     #(set-touched u %)
     :set-values

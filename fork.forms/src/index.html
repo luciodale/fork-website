@@ -3,17 +3,22 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>forms</title>
+    <title>Fork</title>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <link rel="stylesheet" href="/styles/github.css">
     <link rel="stylesheet" href="/assets/forms.css">
+    <script src="/scripts/github.js"></script>
+
+
   </head>
   <body>
-    <div class="content">
-      <div class="content__body">
-        <h1>forms</h1>
-        <div id="app">Loading ClojureScript...</div>
-        <p><a href="https://juxt.pro/edge/docs/index.html">Learn Edge</a></p>
-      </div>
-    </div>
+    <div id="app">Loading ClojureScript...</div>
     <script src="/assets/frontend.js"></script>
+    <script src="/scripts/prism.js"></script>
+    <script src="/scripts/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+    <script>new ClipboardJS('.btn-code');</script>
   </body>
 </html>

@@ -20,27 +20,27 @@
          set-touched
          set-values
          set-submitting
+         set-global-errors
          clear-state]}]
   (.preventDefault evt)
-  (if errors?
-    (do
-      (js/setTimeout
-       #(set-values {:input "hello"})
-       500))
-    (js/setTimeout
-     #(do
-        (js/alert values))
-     1000))
+  (js/setTimeout
+   #(do
+      (set-global-errors {:server-404 "server 404"})
+      (js/alert values))
+   1000)
   (set-submitting false))
 
 (defn validation-schema
   [values]
   {:input
    [[(> (count (:input values)) 3)
-     "Input has to be bigger than 3"]
+     {:err1 "Input has to be bigger than 3"}]
     [(= "hello" (:input values))
-     "must equal hello"]]
-   :area [[(= "hello" (:area values)) "must be hello"]]})
+     {:err2 "must equal hello"}]]
+   :area [[(= "hello" (:area values))
+           {:err1 "must be hello"}]]
+   :this-id [[(= "hi" (:this-id values))
+              {:a "show this ya?"}]]})
 
 (defn fork []
   (html
@@ -52,17 +52,24 @@
                   no-submit-on-enter
                   handle-change
                   handle-blur
-                  handle-on-submit]}
-          ]
+                  handle-on-submit] :as props}
+          {:keys [field
+                  errors]}]
          (fork/fork-form
-          {:on-submit on-submit
+          {:form-id "form-id"
+           :framework :bulma
+           :on-submit on-submit
            :validation [:on-change validation-schema]
            :initial-values
            {:input "bellaa"
             :area "ahah"}})]
      [:form
-      {:on-submit handle-on-submit
+      {:id "form-id"
+       :on-submit handle-on-submit
        :on-key-down no-submit-on-enter}
+      (field {:label "hello"
+              :name :this-id
+              :type "text"})
       [:input
          {:name :input
           :type "text"
@@ -71,26 +78,47 @@
           :on-blur handle-blur
           :on-change handle-change}]
       (when (and (:input touched) (:input errors))
-        [:div "errors here"])
-        [:input
-         {:name :check
-          :type "checkbox"
-          :on-blur handle-blur
-          :on-change handle-change}]
-      (prn (values :area))
+        [:div (str (vals (:input errors)))])
+      ;; checkbox
+      [:input
+       {:name :check
+        :type "checkbox"
+        :on-blur handle-blur
+        :on-change handle-change}]
+      ;; date
       [:input
        {:name :date
         :type "date"
-        :on-change handle-change}]
+        :value (:date values "")
+        :on-change handle-change
+        :on-blur handle-blur}]
+      ;; dropdown
+      [:select
+       {:name :dropdown
+        :on-change handle-change
+        :on-blur handle-blur}
+       [:option
+        {:value :one} "blabla"]
+       [:option
+        {:value :two} "blablabla"]]
+      (when (:check values)
+        [:input
+         {:name :new-one
+          :value (:new-one values "")
+          :on-change handle-change
+          :on-blur handle-blur}])
+      ;; area
         [:textarea
          {:name :area
           :value (:area values "")
           :on-change handle-change
-          :on-blur handle-blur
-          }]
-        [:button
-         {:type "submit"
-          :disabled is-submitting?}
-         "My Submit button"]
-        [:a {:href "example"}
+          :on-blur handle-blur}]
+      ;;submit
+      [:button
+       {:type "submit"
+        :disabled is-submitting?}
+       "My Submit button"]
+      (when (:server-404 errors)
+        [:p (:server-404 errors)])
+      #_[:a {:href "example"}
          "click to go to example"]])))

@@ -4,25 +4,25 @@
   (:require
    [react :as r]))
 
-(defn f [u s]
-  (fn [evt]
-    (u #(assoc % :a 3))
-    (reduce
-     (fn [_ [k v]]
-       (if-not (coll? v)
-         (u #(assoc % k v))
-         (doseq [a v]
-           (u #(assoc % a a)))))
-     nil
-     {:aaa 3 :bvb [:zz :bb] :ccc [:zzz :bbb]})))
-
 (defn view []
   (html
    [:*
     (let [[state update-state] (r/useState {})
           u update-state]
-      (prn state)
       [:div
+       [:input
+        {:on-change
+         (fn [evento]
+           (prn (-> evento .-target .-value)))}]
+       [:select
+        {:on-change
+         (fn [evento]
+           (prn (-> evento .-target .-value)))}
+        [:option "ciao"]
+        [:option "saab"]
+        [:option "audi"]]]
+
+      #_[:div
        [:input
         {:on-change (f u state)}]
        (:a state)])]))
