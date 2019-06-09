@@ -1,0 +1,65 @@
+
+(defn fork.app
+  (:require
+   [fork.fork :as fork]))
+
+
+(defn component []
+  (let [[{:keys [values
+                 handle-change
+                 handle-blur]}]
+        (fork/fork-form {:initial-values
+                         {"input" ""}})]
+    [:form
+     [:input.some-style
+      {:name "input"
+       :value (get values "input")
+       :type "text"
+       :on-change handle-change
+       :on-blur handle-blur}]]))
+
+
+(defn on-submit
+  [evt {:keys [values set-submitting]}]
+  (js/alert values)
+  (set-submitting false))
+
+(defn react-component []
+  (let [[{:keys [values
+                 is-submitting?
+                 handle-change
+                 handle-blur
+                 handle-on-submit]}]
+        (fork/fork-form
+         {:form-id "id"
+          :on-submit on-submit})]
+    [:form
+     {:id "id"
+      :on-submit handle-on-submit}
+     [:input
+      {:name :input
+       :type "text"
+       :value (:input values "")
+       :on-blur handle-blur
+       :on-change handle-change}]
+     [:button
+      {:type "submit"
+       :disabled is-submitting?}
+      "Submit"]]))
+
+
+(defn second []
+  "dkjnfkdj")
+
+(defn fixed-navbar []
+  (html
+   (let [[state update-state] (r/useState nil)]
+     [:nav.navbar.fixed-navbar
+      [:div.navbar-brand
+       [:a.navbar-item.fixed-navbar__brand
+        {:href (routing/href-go! :index)}
+        [:img {:src "/images/logo-white.svg"
+               :width "30"}]
+        [:p.fixed-navbar__brand-name "Fork"]]
+       ]
+      ])))

@@ -16,6 +16,7 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 .hljs-quote {
   color: #998;
   font-style: italic;
+  //comment
 }
 
 .hljs-keyword,
@@ -30,12 +31,14 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 .hljs-variable,
 .hljs-template-variable,
 .hljs-tag .hljs-attr {
-  color: #008080;
+    color: #333;
+    // function parameters
 }
 
 .hljs-string,
 .hljs-doctag {
-  color: #d14;
+    color: #07a;
+    //string
 }
 
 .hljs-title,
@@ -51,15 +54,15 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 
 .hljs-type,
 .hljs-class .hljs-title {
-  color: #458;
+    color: blue;
   font-weight: bold;
 }
 
 .hljs-tag,
 .hljs-name,
 .hljs-attribute {
-  color: #000080;
-  font-weight: normal;
+    color: hsl(0, 0%, 9%);
+    //function calls
 }
 
 .hljs-regexp,
@@ -69,12 +72,14 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
 
 .hljs-symbol,
 .hljs-bullet {
-  color: #990073;
+    color: #690;
+    // keyword
 }
 
 .hljs-built_in,
 .hljs-builtin-name {
-  color: #0086b3;
+    color: #a23232;
+    // defn let prn ..
 }
 
 .hljs-meta {
@@ -94,6 +99,15 @@ github.com style (c) Vasily Polovnyov <vast@whiteants.net>
   font-style: italic;
 }
 
+.hljs-strong {
+  font-weight: bold;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-section,
+.hljs-name,
+.hljs-type,
 .hljs-strong {
   font-weight: bold;
 }

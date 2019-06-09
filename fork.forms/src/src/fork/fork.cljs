@@ -11,30 +11,41 @@
     "default"))
 
 (defn handlers
-  [props state update-state]
+  [props state]
   {:values (:values state)
+   :state state
    :errors (merge (:errors state) (:global-errors state))
    :dirty? (not= (:values state) (:initial-values props))
    :touched (:touched state)
    :is-submitting? (:is-submitting? state)
    :no-submit-on-enter
    #(logic/no-submit-on-enter %)
+   :set-values
+   #(logic/set-values % props)
+   :set-field-value
+   #(logic/set-field-value %1 %2 props)
+   :validate-field
+   #(logic/validate-field % props)
+   :set-touched
+   #(logic/set-touched % props)
+   :set-field-touched
+   #(logic/set-field-touched % props)
    :handle-change
    #(logic/handle-change % props)
+   :validate-form
+   #(logic/validate-form props)
    :clear-state
    #(logic/clear-state props)
    :handle-blur
    #(logic/handle-blur % props)
-   :handle-on-submit
-   #(logic/handle-on-submit % (:on-submit props) props)})
+   :handle-submit
+   #(logic/handle-submit % (:on-submit props) props)})
 
 (defn fork-form
   [{:keys [initial-values validation framework] :as props}]
   (let [[state update-state] (r/useState {:values initial-values})
         props (merge props {:s state :u update-state})
-        handlers (handlers props state update-state)]
-    (when validation
-      (logic/effect-run-validation
-       props ((second validation) (:values state))))
+        handlers (handlers props state)]
+    (prn state)
     [handlers
-     (framework-dispatch framework handlers)]))
+     #_(framework-dispatch framework handlers)]))

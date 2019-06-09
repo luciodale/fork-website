@@ -52,20 +52,21 @@
                   no-submit-on-enter
                   handle-change
                   handle-blur
-                  handle-on-submit] :as props}
-          {:keys [field
-                  errors]}]
+                  handle-submit] :as props}
+          {:keys [field]}]
          (fork/fork-form
-          {:form-id "form-id"
+          {:id "form-id"
            :framework :bulma
            :on-submit on-submit
            :validation [:on-change validation-schema]
            :initial-values
            {:input "bellaa"
-            :area "ahah"}})]
+            :area "ahah"
+            :dropdown "two"}})]
+     (prn (:dropdown values))
      [:form
       {:id "form-id"
-       :on-submit handle-on-submit
+       :on-submit handle-submit
        :on-key-down no-submit-on-enter}
       (field {:label "hello"
               :name :this-id
@@ -95,12 +96,13 @@
       ;; dropdown
       [:select
        {:name :dropdown
+        :value (:dropdown values)
         :on-change handle-change
         :on-blur handle-blur}
        [:option
-        {:value :one} "blabla"]
+        {:value "one"} "one"]
        [:option
-        {:value :two} "blablabla"]]
+        {:value "two"} "two"]]
       (when (:check values)
         [:input
          {:name :new-one

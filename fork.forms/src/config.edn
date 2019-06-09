@@ -10,7 +10,11 @@
                                  :output-dir "public/frontend.out"
                                  :asset-path "/assets/frontend.out"
                                  :optimizations #profile {:dev :none
-                                                          :prod :advanced}}]
+                                                          :prod :advanced}
+                                 :closure-defines
+                                 {:fork.forms.frontend.routing/vhost #profile
+                                  {:dev ""
+                                   :prod "https://decisionvest-stage.cervest.com"}}}]
                        :figwheel-config
                        {:ring-server-options
                         {:port 8900}}}}
@@ -21,6 +25,8 @@
   [:fork.forms/images :edge.yada.ig/resources] {:path "images/"}
   [:fork.forms/styles :edge.yada.ig/resources] {:path "styles/"}
   [:edge.yada.ig/resources :fork.forms/assets] {:path "public/"}
+  :fork.forms.snippets/docs "src/fork/forms/docs_code"
+
   :edge.yada.ig/listener {:handler #ig/ref :edge.bidi.ig/vhost
                           :port 5454}
   :edge.bidi.ig/vhost [["http://localhost:5454"
@@ -30,6 +36,7 @@
                           ["/scripts" #ig/ref [:fork.forms/scripts :edge.yada.ig/resources]]
                           ["/images" #ig/ref [:fork.forms/images :edge.yada.ig/resources]]
                           ["/styles" #ig/ref [:fork.forms/styles :edge.yada.ig/resources]]
+                          ["/snippets" #ig/ref :fork.forms.snippets/docs]
                           [true #ig/ref [:fork.forms/index :edge.yada.ig/classpath-name]]]]]]}
 
  :ig.system/dev
