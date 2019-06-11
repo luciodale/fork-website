@@ -54,7 +54,7 @@
                   handle-blur
                   handle-submit] :as props}
           {:keys [field]}]
-         (fork/fork-form
+         (fork/fork
           {:id "form-id"
            :framework :bulma
            :on-submit on-submit

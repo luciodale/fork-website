@@ -187,7 +187,7 @@ pre code {
 .docs__legend {
     //background-color: yellow;
     width: 300px;
-    height: 80vh;
+    height: auto;
     position: -webkit-sticky;
     position: sticky;
     padding: 1.5em;
@@ -254,7 +254,7 @@ pre code {
 }
 
 .docs__content__section > .docs__content__subtitle {
-    margin: 0.5em 1em;
+    margin: 2em 1em 0em;
 }
 
 .docs__content__subtitle:target::before {
@@ -291,7 +291,19 @@ pre code {
 
 .some-style {
     @extend .fork-input;
-    margin-bottom: 1.25em;
+}
+
+.testt {
+    transition: opacity 1s ease-out;
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+
+}
+.testt--effect {
+     opacity: 1;
+     height: auto;
+
 }
 
 .wrapper1 {

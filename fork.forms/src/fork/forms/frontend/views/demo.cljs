@@ -26,7 +26,7 @@
                   set-values
                   is-validating?
                   handle-blur]}]
-         (fork/fork-form {:validation [:on-change validation]
+         (fork/fork {:validation [:on-change validation]
                           :on-submit on-submit
                           :id "idd"
                           :initial-values

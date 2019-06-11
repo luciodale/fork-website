@@ -46,15 +46,16 @@
          (useLens (.-routing routing) identity)
          [state update-state] (r/useState nil)]
      (http-snippets update-state)
-     (cond
-       (= :index handler) [:> homepage/view nil]
-       :else
-       (let []
-         [:div
-          [:> common/fixed-navbar nil]
-          (case handler
-            :index [:> homepage/view nil]
-            :docs [:> docs/view {:docs state}]
-            :demo [:> demo/view {}]
-            :test (tests/view)
-            :example (test/fork))])))))
+     (when state
+       (cond
+         (= :index handler) [:> homepage/view nil]
+         :else
+         (let []
+           [:div
+            [:> common/fixed-navbar nil]
+            (case handler
+              :index [:> homepage/view nil]
+              :docs [:> docs/view {:docs state}]
+              :demo [:> demo/view {}]
+              :test (tests/view)
+              :example (test/fork))]))))))

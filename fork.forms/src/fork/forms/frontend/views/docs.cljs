@@ -25,9 +25,9 @@
    [:div.docs__legend
     (legend-group
      "Quick-start"
-     [["read-from-an-input"
-       "Read from an input"]
-      ["b" "Write an input"]])
+     [["1" "Component Setup"]
+      ["2" "Submit Form"]
+      ["3" "Validation Schema"]])
     (legend-group
      "Whatever heading"
      [["c" "The bare minimum"]
@@ -42,20 +42,42 @@
        [:h2.docs__content__title "Quick Start:"
         [:span.is-divider.title-divider]]
        [:h5.docs__content__subtitle
-        {:id "read-from-an-input"}
-        "Read from an input"]
-       (render-fork/description-0-0)
+        {:id "1"}
+        "Component Setup:"]
+       (render-fork/description-0-0-0)
        [:> common/code-snippet {:doc (get docs 0)}]
-       (render-fork/description-0-1)
-       [:> common/code-snippet {:doc (get docs 1)}]
-       (render-fork/description-0-2)
-       [:> render-fork/fork-code-0-0 nil]]
+       (render-fork/description-0-0-1)
+       [:> common/code-snippet {:doc (get docs 1)
+                                :full (last docs)}]
+       (render-fork/description-0-0-2)
+       [:> render-fork/fork-code-0-0-0 nil]
+       (render-fork/description-0-0-3)
+       [:h5.docs__content__subtitle
+        {:id "2"}
+        "Submit Form:"]
+       (render-fork/description-0-1-0)
+       [:> common/code-snippet {:doc (get docs 2)}]
+       (render-fork/description-0-1-1)
+       [:> common/code-snippet {:doc (get docs 3)}]
+       (render-fork/description-0-1-2)
+       [:> render-fork/fork-code-0-1-0 nil]
+       [:h5.docs__content__subtitle
+        {:id "3"}
+        "Validation Schema:"]
+       (render-fork/description-0-2-0)
+       [:> common/code-snippet {:doc (get docs 4)}]
+       (render-fork/description-0-2-1)
+       [:> common/code-snippet {:doc (get docs 5)}]
+       [:> render-fork/fork-code-0-2-0 nil]]
+
+
 
       [:div
        [:h2.docs__content__title "Whatever"
         [:span.is-divider.title-divider]]
        [:p "The bare minimum"]
-       [:> common/code-snippet {:doc (get docs 2)}]]])))
+       [:> common/code-snippet {:doc (get docs 2)}]
+       ]])))
 
 (defn view
   [docs]

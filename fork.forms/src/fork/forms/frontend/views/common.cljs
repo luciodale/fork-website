@@ -30,7 +30,8 @@
        {:class state}
        [:div.navbar-end
         [:div.navbar-item.fixed-navbar__item
-         {:on-click #(routing/go! :docs)}
+         {:on-click #(do (routing/go! :docs)
+                         (update-state nil))}
          [:a.fixed-navbar__link
           "Docs"]]
         [:div.navbar-item.fixed-navbar__item
@@ -38,8 +39,9 @@
          [:a.fixed-navbar__link
           "Installation"]]
         [:div.navbar-item.fixed-navbar__item
+         {:on-click #(do (routing/go! :demo)
+                          (update-state nil))}
          [:a.fixed-navbar__link
-          {:on-click #(routing/go! :demo)}
           "Demo"]]]]])))
 
 (defn props-out! [props k]
@@ -61,22 +63,24 @@
 (defn code-snippet
   [props]
   (let [snippet (props-out! props :doc)
-        [state update-state] (r/useState "Copy")
+        [state update-state] (r/useState {:copy "Copy"
+                                          :snippet snippet})
         snippet-element (r/useRef nil)]
-    (highlight-code-block snippet-element snippet)
+    (highlight-code-block snippet-element (:snippet state))
     (html
      [:div.code-snippet
       [:pre
        [:code.clj
         {:ref snippet-element}
-        snippet]]
-      [:a.button.code-snippet__copy
+        (:snippet state)]]
+      [:a.code-snippet__copy
        {:class "btn-code"
-        :data-clipboard-text snippet
-        :on-click #(update-state "Copied")}
+        :data-clipboard-text (:snippet state)
+        :on-click
+        #(update-state (fn [s] (assoc s :copy "Copied")))}
        [:span.icon
         [:i.far.fa-copy]]
-       [:span state]]])))
+       [:span (:copy state)]]])))
 
 (defn github-widget []
   (html
