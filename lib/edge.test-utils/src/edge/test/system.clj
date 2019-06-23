@@ -2,21 +2,38 @@
 
 (ns edge.test.system
   (:require
-   [integrant.core :as ig]))
+   [integrant.core :as ig]
+   [edge.system]))
 
 (def ^:dynamic *system* nil)
 
-(defmacro with-system
-  [system & body]
-  `(let [s# (ig/init ~system)]
+(defmacro ^:private with-system
+  [system ks & body]
+  `(let [system# ~system
+         s# (ig/init system# (or ~ks (keys system#)))]
      (try
        (binding [*system* s#]
          ~@body)
        (finally
          (ig/halt! s#)))))
 
+(defn- default-system
+  []
+  (edge.system/system-config
+    {:profile :test}))
+
 (defn with-system-fixture
-  [system]
-  (fn [f]
-    (with-system (system)
-      (f))))
+  ([]
+   (with-system-fixture default-system))
+  ([system]
+   (fn [f]
+     (with-system (system) nil
+       (f)))))
+
+(defn with-subsystem-fixture
+  ([ks]
+   (with-subsystem-fixture default-system))
+  ([system ks]
+   (fn [f]
+     (with-system (system) ks
+       (f)))))
