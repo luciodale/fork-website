@@ -8,7 +8,6 @@
    [fork.forms.frontend.views.test :as test]
    [fork.forms.frontend.views.common :as common]
    [fork.forms.frontend.views.tests :as tests]
-   [fork.forms.frontend.routing :refer [vhost site-root]]
    [ajax.core :as ajax]
    [react :as r]))
 
@@ -32,7 +31,7 @@
   (r/useEffect
     (fn [_]
       (ajax/ajax-request
-       {:uri (str vhost site-root "snippets")
+       {:uri "/snippets"
         :method :get
         :handler #(handler % update-state)
         :response-format (ajax/transit-response-format)})
@@ -56,6 +55,8 @@
             (case handler
               :index [:> homepage/view nil]
               :docs [:> docs/view {:docs state}]
-              :demo [:> demo/view {}]
+              :demo [:> demo/view nil]
               :test (tests/view)
-              :example (test/fork))]))))))
+              :example [:> test/fork nil]
+              :else
+              [:div "handler:" (str handler)])]))))))

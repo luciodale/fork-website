@@ -72,6 +72,10 @@ pre code {
     font-size: 0.7em;
 }
 
+.play-time {
+    padding: 1em;
+    background: rgba(224,255,255 ,1);
+}
 
 .content pre:not(:last-child), .content table:not(:last-child) {
     margin-bottom: 0em;
@@ -175,6 +179,7 @@ pre code {
     width: 90%;
     margin: auto;
     margin-top: 100px;
+    padding-left: 100px;
     display: flex;
     align-items: flex-start;
     //background: red;

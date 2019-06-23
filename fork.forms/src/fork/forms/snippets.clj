@@ -44,3 +44,20 @@
               {:produces ["application/transit+json"]
                :response (fn [ctx]
                            (parse-snippets snippets))}}}))
+
+(defmethod ig/init-key ::server-validation
+  [_ snippets]
+  (yada/resource
+   {:id ::snippets
+    :methods {:post
+              {:consumes ["application/transit+json"]
+               :produces ["application/transit+json"]
+               :response (fn [ctx]
+                           (let [input (-> ctx :body
+                                           :input)]
+                             (prn "in endpoint input:" input)
+
+                             (Thread/sleep 2000)
+                             (if (= input "server-input")
+                               {:validation true}
+                               {:validation false})))}}}))

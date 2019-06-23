@@ -4,7 +4,6 @@
   (:require
    [fork.forms.frontend.views.common :as common]
    [fork.forms.frontend.views.docs-render-fork :as render-fork]
-   [fork.forms.frontend.routing :refer [vhost site-root]]
    [fork.fork :as fork]
    [react :as r]))
 
@@ -24,10 +23,12 @@
   (html
    [:div.docs__legend
     (legend-group
-     "Quick-start"
-     [["1" "Component Setup"]
+     "Quick Start"
+     [["0" "Welcome"]
+      ["1" "Component Setup"]
       ["2" "Submit Form"]
-      ["3" "Validation Schema"]])
+      ["3" "Validation Schema"]
+      ["4" "Summary"]])
     (legend-group
      "Whatever heading"
      [["c" "The bare minimum"]
@@ -41,6 +42,10 @@
       [:div.docs__content__section
        [:h2.docs__content__title "Quick Start:"
         [:span.is-divider.title-divider]]
+       [:h5.docs__content__subtitle
+        {:id "0"}
+        "Welcome:"]
+       (render-fork/description-intro)
        [:h5.docs__content__subtitle
         {:id "1"}
         "Component Setup:"]
@@ -68,7 +73,18 @@
        [:> common/code-snippet {:doc (get docs 4)}]
        (render-fork/description-0-2-1)
        [:> common/code-snippet {:doc (get docs 5)}]
-       [:> render-fork/fork-code-0-2-0 nil]]
+       (render-fork/description-0-2-2)
+       [:> render-fork/fork-code-0-2-0 {"n" 0}]
+       (render-fork/description-0-2-3)
+       [:> common/code-snippet {:doc (get docs 6)}]
+       (render-fork/description-0-2-4)
+       [:> render-fork/fork-code-0-2-0 {"n" 1}]
+       [:h5.docs__content__subtitle
+        {:id "4"}
+        "Summary:"]
+
+
+       ]
 
 
 

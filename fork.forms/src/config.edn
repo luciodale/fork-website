@@ -11,10 +11,9 @@
                                  :asset-path "/assets/frontend.out"
                                  :optimizations #profile {:dev :none
                                                           :prod :advanced}
+                                 :infer-externs true
                                  :closure-defines
-                                 {:fork.forms.frontend.routing/vhost #profile
-                                  {:dev ""
-                                   :prod "https://decisionvest-stage.cervest.com"}}}]
+                                 {}}]
                        :figwheel-config
                        {:ring-server-options
                         {:port 8900}}}}
@@ -26,6 +25,7 @@
   [:fork.forms/styles :edge.yada.ig/resources] {:path "styles/"}
   [:edge.yada.ig/resources :fork.forms/assets] {:path "public/"}
   :fork.forms.snippets/docs "src/fork/forms/docs_code"
+  :fork.forms.snippets/server-validation nil
 
   :edge.yada.ig/listener {:handler #ig/ref :edge.bidi.ig/vhost
                           :port 5454}
@@ -37,6 +37,7 @@
                           ["/images" #ig/ref [:fork.forms/images :edge.yada.ig/resources]]
                           ["/styles" #ig/ref [:fork.forms/styles :edge.yada.ig/resources]]
                           ["/snippets" #ig/ref :fork.forms.snippets/docs]
+                          ["/validation" #ig/ref :fork.forms.snippets/server-validation]
                           [true #ig/ref [:fork.forms/index :edge.yada.ig/classpath-name]]]]]]}
 
  :ig.system/dev

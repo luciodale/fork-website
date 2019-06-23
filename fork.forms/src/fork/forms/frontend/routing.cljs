@@ -5,11 +5,8 @@
 
 (def routing (atom nil))
 
-(goog-define vhost "")
-(goog-define site-root "/")
-
 (def routes
-  [site-root
+  ["/"
    [["" :index]
     ["docs" :docs]
     ["test" :test]

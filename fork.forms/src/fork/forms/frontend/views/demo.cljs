@@ -2,53 +2,70 @@
   (:require-macros
    [fork.forms.frontend.hicada :refer [html]])
   (:require
+   [ajax.core :as ajax]
    [react :as r]
    [fork.fork :as fork]))
 
+(defn handler
+  [[response body] values is-validation-passed?]
+  (prn "server result:" response body)
+  (is-validation-passed?
+   (:validation body) :three))
+
+(defn server-validation
+  [props is-validation-passed?]
+  (ajax/ajax-request
+   {:uri  "/validation"
+    :method :post
+    :params
+    {:input (get (-> props :s :values) "two")}
+    :handler #(handler % props is-validation-passed?)
+    :format  (ajax/transit-request-format)
+    :response-format (ajax/transit-response-format)}))
+
 (defn validation [values]
-  {"one"
-   [[(= "hello" (get values "one")) {:whatever1 "one"}]]
-   "two"
-   [[(= "hello" (get values "two")) {:whatever2 "two"}]]})
+  {:client
+   {:on-change
+    {"one"
+     [[(= "hello" (get values "one")) {:one "one"}]
+      [(= "hello" (get values "one")) {:tfhree "one"}]]}}
+   :server
+   {:on-submit
+    {"two"
+     [[server-validation {:three "one"}]]}}})
 
 (defn on-submit
-  [evt {:keys [set-submitting is-invalid? values]}]
-  (.preventDefault evt)
-  (js/alert values)
+  [{:keys [set-submitting
+               is-invalid?
+               values is-waiting?]}]
+
+  (prn "is-invalid?" is-invalid?)
   (set-submitting false))
 
 (defn view [_]
-  (html
-   (let [[{:keys [values
-                  state
-                  handle-change
-                  handle-submit
-                  set-values
-                  is-validating?
-                  handle-blur]}]
-         (fork/fork {:validation [:on-change validation]
-                          :on-submit on-submit
-                          :id "idd"
-                          :initial-values
-                          {"one" ""
-                           "two" ""}})]
-     (prn state)
-     (r/useEffect
-      (fn []
-        (prn "in effect")
-        (when (= (get values "two") "hello")
-          (set-values {"one" "hello"}))
-        identity)
-      #js [(get values "two")])
+  (let [[{:keys [values
+                 state
+                 errors
+                 is-invalid?
+                 test
+                 handle-change
+                 handle-submit
+                 handle-blur]}]
+        (fork/fork {:validation validation
+                    :on-submit on-submit
+                    :prevent-default? true
+                    :initial-values
+                    {"one" ""
+                     "two" ""}})]
+    (html
      [:form.wrapper3
-      {:id "idd"
-       :on-submit handle-submit}
+      {:on-submit handle-submit}
       [:p "Vals:" (get values "one")]
       [:input
        {:style {:line-height "2em"
                 :width "400px"}
 
-        :name :one
+        :name "one"
         :value (get values "one")
         :on-change handle-change
         :on-blur handle-blur}]
@@ -56,7 +73,7 @@
        [:input
         {:style {:line-height "2em"
                  :width "400px"}
-         :name :two
+         :name "two"
          :value (get values "two")
          :on-change handle-change
          :on-blur handle-blur}]]

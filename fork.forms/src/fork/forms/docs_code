@@ -21,8 +21,7 @@
 
 
 (defn on-submit
-  [evt {:keys [values set-submitting]}]
-  (.preventDefault evt)
+[{:keys [values set-submitting]}]
   (js/setTimeout
    (fn [_]
      (js/alert values)
@@ -38,6 +37,7 @@
            is-submitting?]}]
         (f/fork {:initial-values
                  {"input" "Type here!"}
+                 :prevent-default? true
                  :on-submit on-submit})]
     [:form
      {:on-submit handle-submit}
@@ -55,13 +55,15 @@
 
 (defn validation
   [values]
-  {"input"
-   [[(> (count (values "input")) 5)
-     {:smaller-than-5
-      "Must be bigger than 5"}]
-    [(= (values "input") "hello fork!")
-     {:must-equal-text
-      "Must equal hello fork!"}]]})
+  {:client
+   {:on-change
+    {"input"
+     [[(> (count (values "input")) 5)
+       {:smaller-than-5
+        "Must be bigger than 5"}]
+      [(= (values "input") "hello fork!")
+       {:must-equal-text
+        "Must equal hello fork!"}]]}}})
 
 
 (defn component []
@@ -75,8 +77,9 @@
            is-submitting?]}]
         (f/fork {:initial-values
                  {"input" "Type here!"}
+                 :prevent-default? true
                  :on-submit on-submit
-                 :validation [:on-change validation]})]
+                 :validation validation})]
     [:form
      {:on-submit handle-submit}
      [:input.some-style
@@ -94,6 +97,17 @@
       {:type "submit"
        :disabled is-submitting?}
       "Submit!"]]))
+
+
+(defn on-submit
+  [{:keys [values set-submitting
+           is-invalid?]}]
+  (if is-invalid?
+    (set-submitting false)
+    (js/setTimeout
+     (fn [_]
+       (js/alert values)
+       (set-submitting false)) 300)))
 
 
 (defn second []
