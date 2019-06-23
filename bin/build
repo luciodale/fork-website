@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-# Heroku build file
-set -ex
-cd fork.forms
-clojure -A:build/once:build:prod/build
-../bin/onejar -A:prod:prod/build --args '-m fork.forms.frontend.main' fork.jar

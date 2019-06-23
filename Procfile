@@ -1,1 +1,0 @@
-web: bin/qgtunnel java -jar fork.forms/fork.jar

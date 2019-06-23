@@ -1,5 +1,0 @@
-{
-    "name": "Fork"
-    "description": "Fork App",
-    "image": "heroku/clojure",
-}
