@@ -1,1 +1,1 @@
-web: java $JVM_OPTS -jar fork.forms/project.jar
+web: java $JVM_OPTS -jar project.jar
