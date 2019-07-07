@@ -29,8 +29,7 @@
   :fork.forms.snippets/reg-validation nil
 
   :edge.yada.ig/listener {:handler #ig/ref :edge.bidi.ig/vhost
-                          :port #profile {:dev 5454
-                                          :prod 8080}}
+                          :port #long #or [#env PORT 5454]}
   :edge.bidi.ig/vhost [["http://localhost:5454"
                         [""
                          [
