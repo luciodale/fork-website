@@ -26,6 +26,7 @@
   [:edge.yada.ig/resources :fork.forms/assets] {:path "public/"}
   :fork.forms.snippets/docs "src/fork/forms/docs_code"
   :fork.forms.snippets/server-validation nil
+  :fork.forms.snippets/reg-validation nil
 
   :edge.yada.ig/listener {:handler #ig/ref :edge.bidi.ig/vhost
                           :port 5454}
@@ -38,6 +39,7 @@
                           ["/styles" #ig/ref [:fork.forms/styles :edge.yada.ig/resources]]
                           ["/snippets" #ig/ref :fork.forms.snippets/docs]
                           ["/validation" #ig/ref :fork.forms.snippets/server-validation]
+                          ["/reg-validation" #ig/ref :fork.forms.snippets/reg-validation]
                           [true #ig/ref [:fork.forms/index :edge.yada.ig/classpath-name]]]]]]}
 
  :ig.system/dev

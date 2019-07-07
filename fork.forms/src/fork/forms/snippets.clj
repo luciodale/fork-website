@@ -61,3 +61,16 @@
                              (if (= input "server-input")
                                {:validation true}
                                {:validation false})))}}}))
+
+(defmethod ig/init-key ::reg-validation
+  [_ snippets]
+  (yada/resource
+   {:id ::reg-validation
+    :methods {:post
+              {:consumes ["application/transit+json"]
+               :produces ["application/transit+json"]
+               :response (fn [ctx]
+                           (let [input (-> ctx :body :email)]
+                             (if (= input "fork@form.com")
+                               {:validation false}
+                               {:validation true})))}}}))

@@ -2,86 +2,120 @@
   (:require-macros
    [fork.forms.frontend.hicada :refer [html]])
   (:require
+   [ajax.core :as ajax]
    [fork.fork :as fork]
    [react :as r]))
 
-(defn actions
-  [values]
-  (when (= "ciao" (:keyword values))
-    {:check
-     {:value true
-      :disabled true}}))
+(defn handler
+  [[response body] values is-validation-passed?]
+  (is-validation-passed?
+   (:validation body) :err))
 
-(defn on-submit
-  [evt {:keys
-        [is-invalid?
-         values
-         dirty?
-         set-touched
-         set-values
-         set-submitting
-         set-after-submit-errors
-         clear-state]}]
-  (.preventDefault evt)
-  (js/setTimeout
-   #(do
-      (when is-invalid?
-        (set-after-submit-errors {:server-404 "server 404"})
-        (js/alert values)))
-   1000)
-  (set-submitting false))
+(defn server-validation
+  [{:keys [values is-invalid? is-validation-passed?]}]
+  (ajax/ajax-request
+   {:uri  "/validation"
+    :method :post
+    :params
+    {:input (get values "two")}
+    :handler #(handler % values is-validation-passed?)
+    :format  (ajax/transit-request-format)
+    :response-format (ajax/transit-response-format)}))
 
-(defn validation-schema
-  [values]
+(defn validation [values]
   {:client
    {:on-change
-    {"input"
-     [[(> (count (:input values)) 10)
-       {:err1 "Input has to be bigger than 3"}]
-      [(= "hello" (:input values))
-       {:err2 "must equal hello"}]]}}})
+    {"one"
+     [[(not (clojure.string/blank? (values "one")))
+       {:err "Error message on change client"}]]}}
+   :server
+   {:on-change
+    {"two"
+     [[server-validation {:err "Error message server"}]]}}})
 
-(defn fork [_]
-  (html
-   (let [[{:keys [values
-                  is-submitting?
-                  dirty?
-                  touched
-                  state
-                  errors
-                  no-submit-on-enter
-                  handle-change
-                  handle-blur
-                  handle-submit] :as props}
-          {:keys [field]}]
-         (fork/fork
-          {:id "form-id"
-           :framework :bulma
-           :on-submit on-submit
-           :validation  validation-schema
-           :initial-values
-           {"input" "bellaa"}})]
-     (prn state)
-     [:form
-      {:style {:margin-top "200px"}
-       :on-submit handle-submit
-       :on-key-down no-submit-on-enter}
-      [:input
-       {:name "input"
-          :type "text"
-          :disabled (= "aaa" (:area values))
-        :value (values "input")
-          :on-blur handle-blur
-          :on-change handle-change}]
-      (when (and (get touched "input")
-                 (get errors "input"))
-        [:div (str (vals (:input errors)))])
+(def fn-count (atom #{}))
 
-      [:button
-       {:type "submit"
-        :disabled is-submitting?}
-       "My Submit button"]
-      (when (:server-404 errors)
-        [:p (:server-404 errors)])
-      #_[:a {:href "example"}
-         "click to go to example"]])))
+(defn on-submit
+  [{:keys [set-submitting
+               is-invalid?
+               values is-waiting? errors]}]
+  (prn "is-invalid?" is-invalid?)
+  (prn "errors:" errors)
+  (if is-invalid?
+    (do "is invalid!!"
+       (set-submitting false))
+    (do
+      (js/alert values)
+      (set-submitting false)))
+  )
+
+#_(defn view [_]
+  (let [[c1 set-c1] (r/useState 0)
+        [c2 set-c2] (r/useState 0)
+        inc1 (r/useCallback (fn [] (set-c1 inc)) #js [c1])
+        inc2 (r/useCallback (fn [] (set-c2 inc)) #js [c2])]
+    (swap! fn-count conj inc1)
+    (swap! fn-count conj inc2)
+    (html
+     [:div {:style
+            {:margin-top "100px"}}
+      [:div (str "Counter 1 is" c1)]
+      [:div (str "Counter 2 is" c2)]
+      [:br]
+      [:button {:on-click inc1} "Inc 1"]
+      [:button {:on-click inc2} "Inc 2"]
+      [:br]
+      [:div "Newly created fns:" (- (count @fn-count) 2)]])))
+
+(defn view [_]
+  (let [[{:keys [values
+                 state
+                 errors
+                 is-invalid?
+                 is-submitting?
+                 handle-change
+                 set-values
+                 handle-submit
+                 handle-blur]}]
+        (fork/fork {
+                    :on-submit on-submit
+                    :prevent-default? true
+                    :initial-values
+                    {"one" ""
+                     "two" ""}
+                    :validation validation})]
+    (prn state)
+    (html
+     [:div {:style
+            {:text-align "center"
+             :margin-top "100px"}}
+      [:form.wrapper3
+       {:on-submit handle-submit}
+       [:input
+        {:style {:line-height "2em"
+                 :width "400px"}
+         :value (get values "one")
+         :name "one"
+         :on-change handle-change
+         :on-blur handle-blur}]
+       [:div
+        (for [[k msg] (get errors "one")]
+          [:p.help
+           {:key k}
+           msg])]
+       [:div
+        [:input
+         {:style {:line-height "2em"
+                  :width "400px"}
+          :name "two"
+          :value (get values "two")
+          :on-change handle-change
+          :on-blur handle-blur}]
+        (for [[k msg] (get errors "two")]
+          [:p.help
+           {:key k}
+           msg])]
+       [:button.button
+        {:type "submit"
+         :class (when is-submitting? "is-loading")}
+        "My Submit button"]]])))

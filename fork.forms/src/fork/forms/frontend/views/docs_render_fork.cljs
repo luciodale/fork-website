@@ -2,6 +2,7 @@
   (:require-macros
    [fork.forms.frontend.hicada :refer [html]])
   (:require
+   [fork.forms.frontend.views.common :as common]
    [fork.fork :as fork]
    [react :as r]))
 
@@ -59,15 +60,12 @@
   (html
    [:div
     [:div.docs__content__fragment
-     [:p "Hey there! Curious about Fork? You are in the right place. This quick tutorial will walk you through the basics of the library and give you some magic power to build your forms in a heartbeat, really!"]]
-
-    [:div.docs__content__fragment
-     [:p "You will learn how to read, validate, and submit your forms with little yet fully customizable code. Let the journey begin!"]]]))
+     [:p "Hey there! Curious about Fork? You are in the right place. This quick tutorial will walk you through the basics of the library and give you some magic power to build your forms in a heartbeat, while keeping it fully customizable, really!"]]]))
 
 (defn description-0-0-0 []
   (html
    [:div.docs__content__fragment
-    [:p "First, require" (s "fork") "in your namespace."]]))
+    [:p "First, require" (s "Fork") "in your namespace."]]))
 
 (defn description-0-0-1 []
   (html
@@ -94,12 +92,12 @@
       " it would have been automatically cast to: " (c "\"input\"" :no-right) "."]]]))
 
 (defn fork-code-0-0-0 []
-  (html
-   (let [[{:keys [values
-                  handle-change
-                  handle-blur]}]
-         (fork/fork {:initial-values
-                          {"input" "Type here!"}})]
+  (let [[{:keys [values
+                 handle-change
+                 handle-blur]}]
+        (fork/fork {:initial-values
+                    {"input" "Type here!"}})]
+    (html
      [:div.docs__content__fragment.play-time
       [:div.fragment__heading
        [:p [:strong "Play Time:"]]]
@@ -150,10 +148,8 @@
 
 (defn on-submit-0-1-0
   [{:keys [values set-submitting]}]
-  (js/setTimeout
-   (fn [_]
-     (js/alert values)
-     (set-submitting false)) 300))
+  (set-submitting false)
+  (js/alert values))
 
 (defn fork-code-0-1-0 []
   (html
@@ -223,7 +219,7 @@
     [:div.docs__content__fragment
      [:p " You can freely name the keywords for your error messages, but bare in mind that they must be unique, when they fall within the same input validation."]]
     [:div.docs__content__fragment
-     [:p "At this point, pass your validation function to" (num "fork" "[15]")
+     [:p "At this point, pass your validation function to" (num "Fork" "[15]")
       "and include" (c "errors") "and" (c "touched")
       "to the destructured" (num "keys" "[5-6]" :no-right) "."]]]))
 
@@ -261,16 +257,13 @@ to display the errors only after the" [:strong " on-blur "] "effect has been fir
 (defn on-submit-0-2-1
   [{:keys [values set-submitting
            is-invalid?]}]
-  (if is-invalid?
-    (set-submitting false)
-    (js/setTimeout
-     (fn [_]
-       (js/alert values)
-       (set-submitting false)) 300)))
+  (set-submitting false)
+  (when-not is-invalid?
+    (js/alert values)))
 
 (defn fork-code-0-2-0
   [handler]
-  (let [{n "n"} (js->clj handler)
+  (let [{n "n"} (common/props-out! handler "n")
         [{:keys [values
                  errors
                  touched

@@ -3,80 +3,176 @@
    [fork.forms.frontend.hicada :refer [html]])
   (:require
    [ajax.core :as ajax]
+   [cljs.pprint :as p]
+   [fork.forms.frontend.views.common :as common]
    [react :as r]
-   [fork.fork :as fork]))
+   [fork.fork :as fork])
+  (:import
+   [goog.async Debouncer]))
 
-(defn handler
-  [[response body] values is-validation-passed?]
-  (prn "server result:" response body)
-  (is-validation-passed?
-   (:validation body) :three))
+(defn debounce [f interval]
+  (let [dbnc (Debouncer. f interval)]
+    (fn [& args] (.apply (.-fire dbnc) dbnc (to-array args)))))
 
-(defn server-validation
-  [props is-validation-passed?]
-  (ajax/ajax-request
-   {:uri  "/validation"
-    :method :post
-    :params
-    {:input (get (-> props :s :values) "two")}
-    :handler #(handler % props is-validation-passed?)
-    :format  (ajax/transit-request-format)
-    :response-format (ajax/transit-response-format)}))
+(defn highlight-code-block-dynamic
+  [snippet-ref snippet]
+  (r/useEffect
+   (fn []
+     (when-let [snippet-ref
+                (-> snippet-ref .-current)]
+       (js/hljs.highlightBlock snippet-ref))
+     js/undefined) #js [snippet]))
 
-(defn validation [values]
+(defn code-snippet
+  [props]
+  (let [snippet
+        (common/props-out! props :state)
+        snippet-element (r/useRef nil)]
+    (highlight-code-block-dynamic
+     snippet-element snippet)
+    (html
+     [:div.code-snippet-demo
+      [:pre
+       [:code.clj
+        {:ref snippet-element}
+        snippet]]])))
+
+(defn easy-input
+  [{:keys [input-name
+           placeholder
+           type label
+           icon-left]}
+   {{:keys [values
+            touched
+            errors
+            handle-change
+            handle-blur]} :props}]
+  (html
+   [:div.field
+    [:label.label.fork-label label]
+    [:div.control.has-icons-left
+     [:input.input
+      {:name input-name
+       :placeholder placeholder
+       :type type
+       :value (get values input-name)
+       :on-change handle-change
+       :on-blur handle-blur}]
+     [:span.icon.is-small.is-left
+      [:i {:class (str "fas " icon-left)}]]]
+    (when (and (get touched input-name)
+               (get errors input-name))
+      (for [[k msg] (get errors input-name)]
+        [:p.help {:key k} msg]))]))
+
+(defn easy-submit
+  [{:keys [class]}
+   {{:keys [is-submitting?
+            submit-count
+            is-invalid?]} :props}]
+  (html
+   [:button.button
+    {:type "submit"
+     :class (str class " "
+                 (when is-submitting?
+                   "is-loading"))
+     :disabled (and is-invalid?
+                    (> submit-count 0))}
+    "Submit"]))
+
+(defn reg-handler
+  [[response body] {:keys [is-validation-passed?
+                           set-waiting-for-server]}]
+  (set-waiting-for-server "email" false)
+  (is-validation-passed? (:validation body) :server-email))
+
+(defn reg-server-validation
+  [{:keys [values errors set-waiting-for-server] :as props}]
+  (if (:client-email (get errors "email"))
+    (set-waiting-for-server "email" false)
+    (ajax/ajax-request
+     {:uri  "/reg-validation"
+      :method :post
+      :params {:email (get values "email")}
+      :handler #(reg-handler % props)
+      :format  (ajax/transit-request-format)
+      :response-format (ajax/transit-response-format)})))
+
+(defn reg-on-submit
+  [{:keys [set-submitting
+           values is-invalid?]}]
+  (set-submitting false)
+  (when-not is-invalid?
+    (js/alert values)))
+
+(defn reg-validation
+  [values]
   {:client
    {:on-change
-    {"one"
-     [[(= "hello" (get values "one")) {:one "one"}]
-      [(= "hello" (get values "one")) {:tfhree "one"}]]}}
+    {"email"
+     [[(re-matches #".+@.+" (values "email"))
+       {:client-email "Must be email"}]]
+     "password"
+     [[(> (count (values "password")) 6)
+       {:err "Must be longer than 6 chars"}]]
+     "re-password"
+     [[(= (values "password")
+          (values "re-password"))
+       {:err "Must match password"}]]}}
    :server
-   {:on-submit
-    {"two"
-     [[server-validation {:three "one"}]]}}})
+   {:on-change
+    {"email"
+     [[reg-server-validation {:server-email "Your email is already taken!"}]]}}})
 
-(defn on-submit
-  [{:keys [set-submitting
-               is-invalid?
-               values is-waiting?]}]
+(defn registration [_]
+  (let [[props]
+        (fork/fork
+         {:initial-values {"email" ""
+                           "password" ""
+                           "re-password" ""}
+          :prevent-default? true
+          :validation reg-validation
+          :on-submit reg-on-submit})]
+    (html
+     [:div.demo__reg__container
 
-  (prn "is-invalid?" is-invalid?)
-  (set-submitting false))
+      [:form.fork-card.demo__reg__card
+       {:on-submit (:handle-submit props)}
+       [:div.fork-title "Register"]
+       [:div.is-divider.fork-divider]
+       (easy-input {:input-name "email"
+                    :placeholder "your@email.com"
+                    :type "text"
+                    :label "Email"
+                    :icon-left "fa-user"}
+                   {:props props})
+       (easy-input {:input-name "password"
+                    :type "password"
+                    :label "Password"
+                    :icon-left "fa-lock"}
+                   {:props props})
+       (easy-input {:input-name "re-password"
+                    :type "password"
+                    :label "Confirm Password"
+                    :icon-left "fa-lock"}
+                   {:props props})
+       (easy-submit {:class "reg__submit"}
+                    {:props props})]
+      [:> code-snippet
+       {:state
+        (with-out-str
+          (p/pprint
+           (:state props)))}]])))
 
 (defn view [_]
-  (let [[{:keys [values
-                 state
-                 errors
-                 is-invalid?
-                 test
-                 handle-change
-                 handle-submit
-                 handle-blur]}]
-        (fork/fork {:validation validation
-                    :on-submit on-submit
-                    :prevent-default? true
-                    :initial-values
-                    {"one" ""
-                     "two" ""}})]
+  (let []
     (html
-     [:form.wrapper3
-      {:on-submit handle-submit}
-      [:p "Vals:" (get values "one")]
-      [:input
-       {:style {:line-height "2em"
-                :width "400px"}
-
-        :name "one"
-        :value (get values "one")
-        :on-change handle-change
-        :on-blur handle-blur}]
-      [:div
-       [:input
-        {:style {:line-height "2em"
-                 :width "400px"}
-         :name "two"
-         :value (get values "two")
-         :on-change handle-change
-         :on-blur handle-blur}]]
-      [:button
-       {:type "submit"}
-       "My Submit button"]])))
+     [:div
+      [:div.demo__reg
+       [:div "sdkldsjfndalfjnadlfjnadlfjn
+sdlnsdljfnsdljfnsdljfndsljn"]
+       [:> registration nil]]
+      [:div.demo-content-2
+       "heelo"]
+      [:div.demo-content-3
+       "heelo"]])))

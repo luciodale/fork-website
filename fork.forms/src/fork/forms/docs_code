@@ -22,10 +22,8 @@
 
 (defn on-submit
 [{:keys [values set-submitting]}]
-  (js/setTimeout
-   (fn [_]
-     (js/alert values)
-     (set-submitting false)) 300))
+  (set-submitting false)
+  (js/alert values))
 
 
 (defn component []
@@ -100,14 +98,10 @@
 
 
 (defn on-submit
-  [{:keys [values set-submitting
-           is-invalid?]}]
-  (if is-invalid?
-    (set-submitting false)
-    (js/setTimeout
-     (fn [_]
-       (js/alert values)
-       (set-submitting false)) 300)))
+  [{:keys [values set-submitting is-invalid?]}]
+  (set-submitting false)
+  (when-not is-invalid?
+    (js/alert values)))
 
 
 (defn second []

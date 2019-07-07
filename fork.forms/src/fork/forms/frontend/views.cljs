@@ -7,11 +7,10 @@
    [fork.forms.frontend.views.demo :as demo]
    [fork.forms.frontend.views.test :as test]
    [fork.forms.frontend.views.common :as common]
-   [fork.forms.frontend.views.tests :as tests]
    [ajax.core :as ajax]
    [react :as r]))
 
-(defn- useLens
+(defn use-lens
   [a f]
   (let [[value update-value] (r/useState (f @a))]
     (r/useEffect
@@ -42,7 +41,7 @@
   [routing]
   (html
    (let [{:keys [handler params]}
-         (useLens (.-routing routing) identity)
+         (use-lens (common/props-out! routing :routing) identity)
          [state update-state] (r/useState nil)]
      (http-snippets update-state)
      (when state
@@ -56,7 +55,6 @@
               :index [:> homepage/view nil]
               :docs [:> docs/view {:docs state}]
               :demo [:> demo/view nil]
-              :test (tests/view)
-              :example [:> test/fork nil]
+              :test [:> test/view nil]
               :else
               [:div "handler:" (str handler)])]))))))

@@ -19,9 +19,15 @@
         {:key id}
         [:a {:on-click #(common/go-to-id! id)} li]])]]))
 
-(defn legend []
+(defn legend
+  [toggled? update-toggle]
   (html
-   [:div.docs__legend
+   [:div
+    {:class
+     (if toggled?
+       "docs__legend--mobile" "docs__legend")
+     :on-click #(when toggled?
+                  (update-toggle not))}
     (legend-group
      "Quick Start"
      [["0" "Welcome"]
@@ -52,8 +58,7 @@
        (render-fork/description-0-0-0)
        [:> common/code-snippet {:doc (get docs 0)}]
        (render-fork/description-0-0-1)
-       [:> common/code-snippet {:doc (get docs 1)
-                                :full (last docs)}]
+       [:> common/code-snippet {:doc (get docs 1)}]
        (render-fork/description-0-0-2)
        [:> render-fork/fork-code-0-0-0 nil]
        (render-fork/description-0-0-3)
@@ -65,7 +70,7 @@
        (render-fork/description-0-1-1)
        [:> common/code-snippet {:doc (get docs 3)}]
        (render-fork/description-0-1-2)
-       [:> render-fork/fork-code-0-1-0 nil]
+       #_[:> render-fork/fork-code-0-1-0 nil]
        [:h5.docs__content__subtitle
         {:id "3"}
         "Validation Schema:"]
@@ -74,11 +79,11 @@
        (render-fork/description-0-2-1)
        [:> common/code-snippet {:doc (get docs 5)}]
        (render-fork/description-0-2-2)
-       [:> render-fork/fork-code-0-2-0 {"n" 0}]
+       #_[:> render-fork/fork-code-0-2-0 {"n" 0}]
        (render-fork/description-0-2-3)
        [:> common/code-snippet {:doc (get docs 6)}]
        (render-fork/description-0-2-4)
-       [:> render-fork/fork-code-0-2-0 {"n" 1}]
+       #_[:> render-fork/fork-code-0-2-0 {"n" 1}]
        [:h5.docs__content__subtitle
         {:id "4"}
         "Summary:"]
@@ -97,13 +102,20 @@
 
 (defn view
   [docs]
-  (html
-   [:div
-    [:div.white-edge]
-    [:div.docs
-     (legend)
-     [:div.docs__content
-      [:> docs-render docs]]]
-    [:div {:style {:width "100%"
-                   :height "400px"}}]
-    #_[:> fork-test nil]]))
+  (let [[toggled? update-toggle] (r/useState nil)]
+    (html
+     [:div
+      [:div.white-edge]
+      [:div.docs
+       [:div.toggle__navbar
+        {:on-click
+         (fn [_]
+           (update-toggle not))}
+        [:div "Menu"]
+        [:i.fas.fa-bars.toggle__navbar-icon]]
+        (legend toggled? update-toggle)
+       [:div.docs__content
+        [:> docs-render docs]]]
+      [:div {:style {:width "100%"
+                     :height "400px"}}]
+      #_[:> fork-test nil]])))

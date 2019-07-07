@@ -26,43 +26,20 @@
         [:i.fab.fa-github]]
        [:span "GitHub"]]]]]))
 
-(defn a []
-  "(defn fixed-navbar []
-  (html
-   (let [[state update-state] (r/useState nil)]
-     [:nav.navbar.fixed-navbar
-      [:div.navbar-brand
-       [:a.navbar-item.fixed-navbar__brand
-        {:href (routing/href-go! :index)}
-        [:img {:src \"/images/logo-white.svg\"
-               :width \"30\"}]
-        [:p.fixed-navbar__brand-name \"Fork\"]]
-       [:a.navbar-burger.burger.fixed-navbar__burger
-        {:class state
-         :role \"button\"
-         :aria-label \"menu\"
-         :aria-expanded false
-         :on-click
-         (fn [] (update-state #(when (nil? %) \"is-active\")))}
-        [:span {:aria-hidden true}]
-        [:span {:aria-hidden true}]
-        [:span {:aria-hidden true}]]]
-      [:div.navbar-menu.fixed-navbar__menu
-       {:class state}
-       [:div.navbar-end
-        [:div.navbar-item.fixed-navbar__item
-         {:on-click #(routing/go! :docs)}
-         [:a.fixed-navbar__link
-          \"Docs\"]]
-        [:div.navbar-item.fixed-navbar__item
-         [:a.fixed-navbar__link \"Demo\"]]]]])))")
+(defn a [])
 
 (defn body []
   (html
    [:div.home-body
-    (common/code-snippet (a))
+    [:div "Focus on the fun bits and leave the rest to Fork."]
+    [:div "Fun to use"]
+    [:div "Easy to understand"]
+    [:div "Extra light"]
+    [:div "Built to scale"]
+    [:div "You are one function away from loving forms!"]
     ]))
-
+[:div.docs__content__fragment
+     [:p "Fork was not conceived to work as a full wrapper. In fact, it only provides a set of handy functions to abstract away the complex logic of forms. Let the journey begin!"]]
 (defn view []
   (html
    [:div

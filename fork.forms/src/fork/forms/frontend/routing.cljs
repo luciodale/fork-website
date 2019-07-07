@@ -10,8 +10,7 @@
    [["" :index]
     ["docs" :docs]
     ["test" :test]
-    ["demo" :demo]
-    ["example" :example]]])
+    ["demo" :demo]]])
 
 (defn href-go! [& params]
   (apply bidi/path-for routes params))
