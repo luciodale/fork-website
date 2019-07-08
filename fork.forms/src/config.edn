@@ -2,7 +2,7 @@
  {:kick.builder/target #profile {:dev "target/dev"
                                  :prod "target/prod"}
   :kick/sass {:builds [{:id "forms"
-                        :source "forms.scss"
+                        :source "styles/forms.scss"
                         :target "public/forms.css"}]}
   :kick/figwheel-main {:builds [{:id "app"
                                  :main fork.forms.frontend.main
