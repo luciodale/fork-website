@@ -1,1 +1,1 @@
-;; for heroku
+;; for heroku app
