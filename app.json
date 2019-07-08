@@ -1,10 +1,1 @@
-{"buildpacks": [
-    {
-	"url": "https://github.com/heroku/heroku-buildpack-jvm-common"
-    },
-    {
-	"url": "heroku/clojure"
-    }
-],
- "name": "forkcljs"
-}
+
