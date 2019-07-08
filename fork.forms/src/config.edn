@@ -31,7 +31,7 @@
   :edge.yada.ig/listener {:handler #ig/ref :edge.bidi.ig/vhost
                           :port #long #or [#env PORT 5454]}
   :edge.bidi.ig/vhost [[#profile {:dev "http://localhost:5454"
-                                  :prod "https://forkcljs.herokuapp.com/"}
+                                  :prod "https://forkcljs.herokuapp.com"}
                         [""
                          [
                           ["/assets" #ig/ref [:fork.forms/assets :edge.yada.ig/resources]]
