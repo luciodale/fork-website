@@ -1,1 +1,1 @@
-;; for heroku app
+;; for heroku app deployment
