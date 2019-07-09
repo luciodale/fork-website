@@ -20,10 +20,10 @@
 
  :ig.system/base
  {[:edge.yada.ig/classpath-name :fork.forms/index] {:name "index.html"}
-  [:fork.forms/scripts :edge.yada.ig/resources] {:path "scripts/"}
-  [:fork.forms/images :edge.yada.ig/resources] {:path "images/"}
-  [:fork.forms/styles :edge.yada.ig/resources] {:path "styles/"}
-  [:edge.yada.ig/resources :fork.forms/assets] {:path "public/"}
+  [:fork.forms/scripts :edge.yada.ig/resources] {:path "scripts"}
+  [:fork.forms/images :edge.yada.ig/resources] {:path "images"}
+  [:fork.forms/styles :edge.yada.ig/resources] {:path "styles"}
+  [:edge.yada.ig/resources :fork.forms/assets] {:path "public"}
   :fork.forms.snippets/docs "src/fork/forms/docs_code"
   :fork.forms.snippets/server-validation nil
   :fork.forms.snippets/reg-validation nil
