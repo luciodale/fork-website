@@ -428,9 +428,23 @@ pre code {
     width: 95%;
 }
 
+.fork-form {
+    display: flex;
+    flex-direction: row;
+}
+
 @media (max-width: 414px) {
     .fork-card {
 	width: 95%;
+    }
+
+    .fork-form {
+        flex-direction: column;
+    }
+
+    .fork-button-docs {
+	margin-top: 1em;
+	margin-left: 0em;
     }
 }
 
@@ -524,11 +538,6 @@ pre code {
 
     .docs__content__title {
         top: calc(100px + 29px);
-    }
-
-    .fork-button-docs {
-	margin-top: 1em;
-	margin-left: 0em;
     }
 }
 

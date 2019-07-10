@@ -166,7 +166,7 @@
      [:div.docs__content__fragment.play-time
       [:div.fragment__heading
        [:p [:strong "Play Time:"]]]
-      [:form
+      [:form.fork-form
        {:on-submit handle-submit}
        [:input.some-style
       {:name "input"
@@ -174,10 +174,11 @@
        :type "text"
        :on-change handle-change
        :on-blur handle-blur}]
-       [:button.button.is-success.fork-button-docs
-        {:type "submit"
-         :disabled is-submitting?}
-      "Submit!"]]])))
+       [:div
+        [:button.button.is-success.fork-button-docs
+         {:type "submit"
+          :disabled is-submitting?}
+         "Submit!"]]]])))
 
 (defn description-0-2-0 []
   (html
@@ -284,22 +285,24 @@ to display the errors only after the" [:strong " on-blur "] "effect has been fir
      [:div.docs__content__fragment.play-time
       [:div.fragment__heading
        [:p [:strong "Play Time:"]]]
-      [:form
+      [:form.fork-form
        {:on-submit handle-submit}
-       [:input.some-style
-        {:name "input"
-         :value (get values "input")
-         :type "text"
-         :on-change handle-change
-         :on-blur handle-blur}]
-       (when (and (get errors "input") (get touched "input"))
-         (for [[k msg] (get errors "input")]
-           [:p.help {:key k}
-            msg]))
-       [:button.button.is-success.fork-button-docs
-        {:type "submit"
-         :disabled is-submitting?}
-        "Submit!"]]])))
+       [:div
+        [:input.some-style
+         {:name "input"
+          :value (get values "input")
+          :type "text"
+          :on-change handle-change
+          :on-blur handle-blur}]
+        (when (and (get errors "input") (get touched "input"))
+          (for [[k msg] (get errors "input")]
+            [:p.help {:key k}
+             msg]))]
+       [:div
+        [:button.button.is-success.fork-button-docs
+         {:type "submit"
+          :disabled is-submitting?}
+         "Submit!"]]]])))
 
 (defn description-0-2-5 []
   (html
