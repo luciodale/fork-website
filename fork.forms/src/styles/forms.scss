@@ -32,10 +32,6 @@ pre {
     white-space: pre-wrap;
 }
 
-.hljs {
-    overflow-x: initial;
-}
-
 pre code {
     border: 1px solid #E6EAEE;
     border-radius: 0.28571429rem;
@@ -89,6 +85,7 @@ pre code {
     margin-bottom: 0em;
 }
 
+
 .code-snippet {
     position: relative;
 }
@@ -105,7 +102,7 @@ pre code {
     background-color: $black-color;
     width: 100%;
     position: fixed;
-    z-index: 10;
+    z-index: 11;
     top: 0;
     left: 0;
 }
@@ -233,7 +230,7 @@ pre code {
 .docs__content {
     //background: green;
     height: 100%;
-    width: 600px;
+    width: 700px;
     margin-left: 50px;
 }
 
@@ -300,6 +297,10 @@ pre code {
 
 .fork-input:focus {
     outline: none;
+}
+
+.fork-button-docs {
+    margin-left: 1em;
 }
 
 .some-style {
@@ -433,12 +434,6 @@ pre code {
     }
 }
 
-@media (max-width: 800px) {
-    .code-snippet-demo {
-	width: 95%;
-    }
-}
-
 @media (max-width: 623px) {
     .fixed-navbar__menu {
 	background-color: $dark-grey-color;
@@ -459,6 +454,15 @@ pre code {
     }
 }
 
+@media (max-width: 800px) {
+    .code-snippet-demo {
+	width: 95%;
+    }
+
+    .docs__content {
+        width: 100%;
+    }
+}
 
 @media (max-width: 1024px) {
     .docs {
@@ -520,6 +524,11 @@ pre code {
 
     .docs__content__title {
         top: calc(100px + 29px);
+    }
+
+    .fork-button-docs {
+	margin-top: 1em;
+	margin-left: 0em;
     }
 }
 

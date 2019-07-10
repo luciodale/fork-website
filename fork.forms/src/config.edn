@@ -24,9 +24,11 @@
   [:fork.forms/images :edge.yada.ig/resources] {:path "images"}
   [:fork.forms/styles :edge.yada.ig/resources] {:path "styles"}
   [:edge.yada.ig/resources :fork.forms/assets] {:path "public"}
-  :fork.forms.snippets/docs "src/fork/forms/docs_code"
+  :fork.forms.snippets/docs "docs_code"
+
   :fork.forms.snippets/server-validation nil
   :fork.forms.snippets/reg-validation nil
+
 
   :edge.yada.ig/listener {:handler #ig/ref :edge.bidi.ig/vhost
                           :port #long #or [#env PORT 5454]}

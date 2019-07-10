@@ -23,7 +23,10 @@
 
 (defn parse-snippets
   [snippets]
-  (with-open [file (clojure.java.io/reader snippets)]
+  (with-open [file
+              (clojure.java.io/reader
+               (clojure.java.io/input-stream
+                (clojure.java.io/resource snippets)))]
     (:data
      (reduce
       (fn [{:keys [double-space data] :as coll} this]
@@ -37,18 +40,18 @@
       (line-seq file)))))
 
 (defmethod ig/init-key ::docs
-  [_ snippets]
+  [_ file]
   (yada/resource
    {:id ::snippets
     :methods {:get
               {:produces ["application/transit+json"]
                :response (fn [ctx]
-                           (parse-snippets snippets))}}}))
+                           (parse-snippets file))}}}))
 
 (defmethod ig/init-key ::server-validation
-  [_ snippets]
+  [_ _]
   (yada/resource
-   {:id ::snippets
+   {:id ::server-validation
     :methods {:post
               {:consumes ["application/transit+json"]
                :produces ["application/transit+json"]
@@ -63,7 +66,7 @@
                                {:validation false})))}}}))
 
 (defmethod ig/init-key ::reg-validation
-  [_ snippets]
+  [_ _]
   (yada/resource
    {:id ::reg-validation
     :methods {:post

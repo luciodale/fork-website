@@ -4,3 +4,4 @@ set -ex
 cd fork.forms
 clojure -A:build/once:build:prod/build
 ../bin/onejar -A:prod:prod/build --args '-m edge.main' fork.jar
+heroku deploy:jar fork.jar --app forkcljs

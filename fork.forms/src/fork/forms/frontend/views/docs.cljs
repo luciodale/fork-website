@@ -70,7 +70,7 @@
        (render-fork/description-0-1-1)
        [:> common/code-snippet {:doc (get docs 3)}]
        (render-fork/description-0-1-2)
-       #_[:> render-fork/fork-code-0-1-0 nil]
+       [:> render-fork/fork-code-0-1-0 nil]
        [:h5.docs__content__subtitle
         {:id "3"}
         "Validation Schema:"]
@@ -79,11 +79,11 @@
        (render-fork/description-0-2-1)
        [:> common/code-snippet {:doc (get docs 5)}]
        (render-fork/description-0-2-2)
-       #_[:> render-fork/fork-code-0-2-0 {"n" 0}]
+       [:> render-fork/fork-code-0-2-0 {"n" 0}]
        (render-fork/description-0-2-3)
        [:> common/code-snippet {:doc (get docs 6)}]
        (render-fork/description-0-2-4)
-       #_[:> render-fork/fork-code-0-2-0 {"n" 1}]
+       [:> render-fork/fork-code-0-2-0 {"n" 1}]
        [:h5.docs__content__subtitle
         {:id "4"}
         "Summary:"]

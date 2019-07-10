@@ -154,6 +154,7 @@
 (defn fork-code-0-1-0 []
   (html
    (let [[{:keys [values
+                  state
                   handle-change
                   handle-blur
                   handle-submit
@@ -173,9 +174,8 @@
        :type "text"
        :on-change handle-change
        :on-blur handle-blur}]
-       [:button.button.is-success
-        {:style {:margin-left "1em"}
-         :type "submit"
+       [:button.button.is-success.fork-button-docs
+        {:type "submit"
          :disabled is-submitting?}
       "Submit!"]]])))
 
@@ -258,12 +258,13 @@ to display the errors only after the" [:strong " on-blur "] "effect has been fir
   [{:keys [values set-submitting
            is-invalid?]}]
   (set-submitting false)
+  (prn is-invalid?)
   (when-not is-invalid?
     (js/alert values)))
 
 (defn fork-code-0-2-0
   [handler]
-  (let [{n "n"} (common/props-out! handler "n")
+  (let [n (common/props-out! handler "n")
         [{:keys [values
                  errors
                  touched
@@ -284,22 +285,19 @@ to display the errors only after the" [:strong " on-blur "] "effect has been fir
       [:div.fragment__heading
        [:p [:strong "Play Time:"]]]
       [:form
-       {:style {:display "flex"}
-        :on-submit handle-submit}
-       [:div
-        [:input.some-style
-         {:name "input"
-          :value (get values "input")
-          :type "text"
-          :on-change handle-change
-          :on-blur handle-blur}]
-        (when (and (get errors "input") (get touched "input"))
-          (for [[k msg] (get errors "input")]
-            [:p.help {:key k}
-             msg]))]
-       [:button.button.is-success
-        {:style {:margin-left "1em"}
-         :type "submit"
+       {:on-submit handle-submit}
+       [:input.some-style
+        {:name "input"
+         :value (get values "input")
+         :type "text"
+         :on-change handle-change
+         :on-blur handle-blur}]
+       (when (and (get errors "input") (get touched "input"))
+         (for [[k msg] (get errors "input")]
+           [:p.help {:key k}
+            msg]))
+       [:button.button.is-success.fork-button-docs
+        {:type "submit"
          :disabled is-submitting?}
         "Submit!"]]])))
 

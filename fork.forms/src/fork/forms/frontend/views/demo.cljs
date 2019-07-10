@@ -169,8 +169,7 @@
     (html
      [:div
       [:div.demo__reg
-       [:div "sdkldsjfndalfjnadlfjnadlfjn
-sdlnsdljfnsdljfnsdljfndsljn"]
+       [:div]
        [:> registration nil]]
       [:div.demo-content-2
        "heelo"]
