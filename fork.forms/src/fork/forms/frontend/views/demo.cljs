@@ -228,16 +228,16 @@
                        :label "Email"
                        :icon-left "fa-user"}
                       {:props props})
-        (easy-input {:input-name "password"
-                     :type "password"
-                     :label "Password"
-                     :icon-left "fa-lock"}
-                    {:props props})
-        (easy-input {:input-name "re-password"
-                     :type "password"
-                     :label "Confirm Password"
-                     :icon-left "fa-lock"}
-                    {:props props})
+        (pretty-input {:input-name "password"
+                       :type "password"
+                       :label "Password"
+                       :icon-left "fa-lock"}
+                      {:props props})
+        (pretty-input {:input-name "re-password"
+                       :type "password"
+                       :label "Confirm Password"
+                       :icon-left "fa-lock"}
+                      {:props props})
         (easy-submit {:class "reg__submit"}
                      {:props props})]]
 
