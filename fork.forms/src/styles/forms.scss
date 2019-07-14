@@ -90,6 +90,10 @@ pre code {
     position: relative;
 }
 
+.message-header {
+    background: $black-color;
+}
+
 .code-snippet__copy {
     position: absolute;
     color: $black-color;
@@ -334,18 +338,23 @@ pre code {
 }
 
 .code-snippet-demo {
-    width: 600px;
     text-align: left;
-
     position: relative;
+    margin: auto;
+    padding-bottom: 2em;
+}
+
+.demo-content {
+    width: 70%;
+    margin: auto;
 }
 
 .demo__reg {
     width: 100%;
     text-align: center;
-    padding-top: calc(64px + 9em);
+    padding-top: calc(64px + 3em);
     min-height: 100vh;
-    background: #CCFFCC;
+    background: hsl(340, 83%, 38%);
 }
 
 .demo__reg__container {
@@ -356,59 +365,22 @@ pre code {
 .demo__reg__card {
     width: 350px;
     text-align: left;
-    margin-right: 30px;
+    margin-right: 5em;
+}
 
+.demo__reg__text {
+    max-width: 500px;
+    text-align: left;
 }
 
 .reg__submit {
     margin-top: 0.5em;
     width: calc((350px / 2) - 1.5em);
-
 }
 
-.demo-content-2 {
-    width: 100%;
-    height: 100vh;
-    background: yellow;
-}
-
-.demo-content-3 {
-    width: 100%;
-    height: 100vh;
-    background: blue;
-}
-
-.testt {
-    transition: opacity 1s ease-out;
-    opacity: 0;
-    height: 0;
-    overflow: hidden;
-
-}
-.testt--effect {
-    opacity: 1;
-    height: auto;
-
-}
-
-.wrapper1 {
-    position: relative;
-    width: 500px;
-    margin-top: 200px;
-    background:red;
-}
-
-.wrapper2 {
-    text-align: center;
-    background: green;
-}
-
-.wrapper3 {
-    margin-top: 300px;
-    height: 400px;
-    position: relative;
-    overflow-y: scroll;
-    background: pink;
+.button-inspect {
+    margin-top: 2em;
+    padding: 0 0 1em;
 }
 
 .fixed {
@@ -462,10 +434,6 @@ pre code {
     .code-snippet-demo {
 	width: 100%;
     }
-
-    .fork-card {
-	margin: auto;
-    }
 }
 
 @media (max-width: 800px) {
@@ -478,6 +446,24 @@ pre code {
     }
 }
 
+@media (min-width: 1024px) {
+    .demo__reg__text {
+	order: 2;
+	height: 387px;
+    }
+    .demo__reg__message-body {
+	height: 333px;
+	overflow-y: scroll;
+    }
+    .demo__reg__text.message {
+	margin-bottom: 0em;
+}
+
+
+
+
+}
+
 @media (max-width: 1024px) {
     .docs {
 	width: 100%;
@@ -486,13 +472,29 @@ pre code {
 	margin-top: 64px;
     }
 
-    .demo__reg {
-	padding-top: 6em;
+    .demo-content {
+	width: 95%;
     }
 
     .demo__reg__container {
         flex-direction: column;
 	align-items: center;
+    }
+
+    .demo__reg__card {
+        margin-right: 0em;
+    }
+
+    .demo__reg__text {
+	max-width: 95%;
+    }
+
+    .demo__reg__text.message {
+	margin-bottom: 3em;
+    }
+
+    .button-inspect {
+	text-align: center;
     }
 
     .toggle__navbar {
@@ -517,7 +519,6 @@ pre code {
 	top: 14px;
     }
 
-
     .docs__legend {
 	display: none;
     }
@@ -540,6 +541,9 @@ pre code {
         top: calc(100px + 29px);
     }
 }
+
+.text-red {color: hsl(348, 100%, 61%);}
+.text-green {color: hsl(171, 100%, 41%);}
 
 .red {background-color: red;}
 .blue {background-color: blue;}

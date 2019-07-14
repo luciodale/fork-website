@@ -74,6 +74,9 @@
                :produces ["application/transit+json"]
                :response (fn [ctx]
                            (let [input (-> ctx :body :email)]
-                             (if (= input "fork@form.com")
+                             (if (or
+                                  (= input "fork@form.com")
+                                  (= input "fork@clojure.com")
+                                  (= input "fork@cljs.com"))
                                {:validation false}
                                {:validation true})))}}}))
