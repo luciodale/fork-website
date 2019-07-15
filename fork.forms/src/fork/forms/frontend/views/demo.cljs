@@ -323,6 +323,7 @@
           {:style {:width "100%"}}
           [:input.input
            {:name "city"
+            :disabled (not cities)
             :placeholder "Malibu"
             :type "text"
             :value (get values "city")
@@ -332,6 +333,7 @@
          [:div.control
           [:a.button.is-primary
            {:style {:width "6em"}
+            :disabled (not cities)
             :on-click #()}
            "Go!"]]]
         (when (and (seq matches)
