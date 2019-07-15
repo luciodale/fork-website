@@ -3,6 +3,7 @@
    [fork.forms.frontend.hicada :refer [html]])
   (:require
    [ajax.core :as ajax]
+   [clojure.edn :as edn]
    [cljs.pprint :as p]
    [fork.forms.frontend.views.common :as common]
    [react :as r]
@@ -271,9 +272,12 @@
     :format (ajax/json-request-format)
     :response-format (ajax/json-response-format)
     :handler (fn [[resp body]]
-               (update-cities (map (fn [city] (str (city "name")
-                                                   " - "
-                                                   (city "country"))) body))
+               (update-cities (map (fn [city]
+                                     {"name" (str (city "name")
+                                                 " - "
+                                                 (city "country"))
+                                      "lat" (city "lat")
+                                      "lng" (city "lng")}) body))
                (update-requested false))}))
 
 (defn filter-cities [cities city]
@@ -285,7 +289,7 @@
                   (filter
                    #(re-matches
                      pattern
-                     (subs % 0 word-count))
+                     (subs (get % "name") 0 word-count))
                    cities))))))
 
 (defn weather [_]
@@ -321,7 +325,7 @@
                           (cities-http update-cities
                                        update-requested)))}
           (if cities
-            "Search your city!"
+            (str (count cities) " " "Cities!")
             "Download Cities")]]
         [:div.is-divider.fork-divider]
 
@@ -344,16 +348,17 @@
             :on-click #()}
            "Go!"]]]
         (when (and (seq matches)
-                   (not (= chosen-city city)))
+                   (not (= (get chosen-city "name") city)))
           [:div.suggestion-weather
            (for [x matches]
              (html
               [:option.suggestion-weather__city
                {:key (gensym)
-                :on-click #(let [v (-> % .-target .-value)]
+                :on-click #(let [v (edn/read-string (-> % .-target .-value))]
                              (update-chosen-city v)
-                             (set-field-value "city" v))}
-               (str x)]))])]]
+                             (set-field-value "city" (v "name")))
+                :value x}
+               (str (get x "name"))]))])]]
       [:> code-snippet
        {:state state}]])))
 
