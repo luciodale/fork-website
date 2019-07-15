@@ -352,17 +352,17 @@
                    (not= (s/trim (or chosen-city ""))
                          (s/trim city)))
           [:div.suggestion-weather
-           (for [x matches]
+           (for [x matches
+                 :let [city-name (x "name")]]
              (html
-              (let [city-name (x "name")]
-                [:div.suggestion-weather__city
-                 {:key (gensym)
-                  :on-click #(do
-                               (update-chosen-city city-name)
-                               (set-values {"city" city-name
-                                            "lat" (x "lat")
-                                            "lng" (x "lng")}))}
-                 city-name])))])]]
+              [:div.suggestion-weather__city
+               {:key (gensym)
+                :on-click #(do
+                             (update-chosen-city city-name)
+                             (set-values {"city" city-name
+                                          "lat" (x "lat")
+                                          "lng" (x "lng")}))}
+               city-name]))])]]
       [:> code-snippet
        {:state state}]])))
 
