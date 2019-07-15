@@ -11,6 +11,29 @@
   (:import
    [goog.async Debouncer]))
 
+(defn cities-http [update-cities update-requested]
+  (update-requested true)
+  (ajax/ajax-request
+   {:uri  "https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json"
+    :method :get
+    :format (ajax/json-request-format)
+    :response-format (ajax/json-response-format)
+    :handler (fn [[resp body]]
+               (update-cities (map (fn [city] (str (city "name")
+                                                   " - "
+                                                   (city "country"))) body))
+               (update-requested false))}))
+
+(def a (atom nil))
+
+  (ajax/ajax-request
+   {:uri  "https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json"
+    :method :get
+    :format (ajax/json-request-format)
+    :response-format (ajax/json-response-format)
+    :handler (fn [[resp body]]
+               (reset! a body))})
+
 (defn debounce [f interval]
   (let [dbnc (Debouncer. f interval)]
     (fn [& args] (.apply (.-fire dbnc) dbnc (to-array args)))))
@@ -118,6 +141,32 @@
       (for [[k msg] (get errors input-name)]
         [:p.help {:key k} msg]))]))
 
+(defn reg-description []
+  (html
+   [:div.demo__reg__text.message
+    [:div.message-header
+     [:h4.title {:style {:color "white"
+                         :margin-bottom "0"
+                         :padding "0.2em"}}  "Registration:"]]
+    [:div.message-body.demo__reg__message-body
+     [:div
+      "Being a common use case, the registration is presented as first"
+      [:strong " fork component"] "."]
+     [:br]
+     [:div [:h5.title "Validation"]]
+     [:div "The" [:strong " email "]"input involves both client and server side validation, taking place on change.  The client validation only ensures that the email has \"@\" between any char combination."
+      " The server validation checks whether the inserted email is available for signing up."]
+     [:br]
+     [:div "Fork gives you the option to dispatch the server validation only when the client one succeeds."
+      " In this way, you will not be loading your server with unwanted requests."]
+     [:br]
+     [:div "The list of already taken emails includes:"]
+     [:div
+      [:ul
+       [:li "fork@form.com"]
+       [:li "fork@clojure.com"]
+       [:li "fork@cljs.com"]]]]]))
+
 (defn easy-submit
   [{:keys [class]}
    {{:keys [is-submitting?
@@ -194,31 +243,8 @@
     (html
      [:div.demo-content.content
       [:div.demo__reg__container
-       [:div.demo__reg__text.message
-        [:div.message-header
-         [:h4.title {:style {:color "white"
-                             :margin-bottom "0"
-                             :padding "0.2em"}}  "Registration:"]]
-        [:div.message-body.demo__reg__message-body
-         [:div
-         "Being a common use case, the registration is presented as first"
-          [:strong " fork component"] "."]
-         [:br]
-         [:div [:h5.title "Validation"]]
-         [:div "The" [:strong " email "]"input involves both client and server side validation, taking place on change.  The client validation only ensures that the email has \"@\" between any char combination."
-          " The server validation checks whether the inserted email is available for signing up."]
-         [:br]
-         [:div "Fork gives you the option to dispatch the server validation only when the client one succeeds."
-          " In this way, you will not be loading your server with unwanted requests."]
-         [:br]
-         [:div "The list of already taken emails includes:"]
-         [:div
-          [:ul
-           [:li "fork@form.com"]
-           [:li "fork@clojure.com"]
-           [:li "fork@cljs.com"]]]]]
-
-       [:form.fork-card.demo__reg__card
+       (reg-description)
+       [:form.fork-card.demo__card
         {:on-submit (:handle-submit props)}
         [:div.fork-title "Register"]
         [:div.is-divider.fork-divider]
@@ -240,9 +266,87 @@
                       {:props props})
         (easy-submit {:class "reg__submit"}
                      {:props props})]]
-
       [:> code-snippet
        {:state (:state props)}]])))
+
+(defn filter-cities [cities city]
+  (when-not (s/blank? city)
+    (let [pattern (re-pattern (str "(?i)" city))
+          word-count (count city)]
+      (into #{}
+            (take 10
+                  (filter
+                   #(re-matches
+                     pattern
+                     (subs % 0 word-count))
+                   cities))))))
+
+(defn weather [_]
+  (let [[cities update-cities] (r/useState nil)
+        [requested? update-requested] (r/useState nil)
+        [{:keys [state values handle-change
+                 set-field-value] :as props}]
+        (fork/fork
+         {:initial-values {"city" ""}
+          :prevent-default? true})
+        [is-clicked? update-is-clicked] (r/useState "")
+        city (values "city")
+        matches (filter-cities cities city)
+        [chosen-city update-chosen-city] (r/useState nil)]
+    (html
+     [:div.demo-content.content
+      [:div.demo__reg__container
+       #_(reg-description)
+       [:div.fork-card.demo__card
+        [:div.weather__title-group
+         [:div.fork-title
+          {:style {:margin-bottom "0"}}
+          "Weather"]
+         [:button.button
+          {:disabled (when requested? true)
+           :class (cond
+                    (and (not cities) requested?)
+                    "is-loading"
+                    :else "")
+           :on-click #(do
+                        (.preventDefault %)
+                        (when-not cities
+                          (cities-http update-cities
+                                       update-requested)))}
+          (if cities
+            "Search your city!"
+            "Download Cities")]]
+        [:div.is-divider.fork-divider]
+
+        [:div.field.has-addons
+         [:div.control.has-icons-left
+          {:style {:width "100%"}}
+          [:input.input
+           {:name "city"
+            :placeholder "Malibu"
+            :type "text"
+            :value (get values "city")
+            :on-change handle-change}]
+          [:span.icon.is-small.is-left
+           [:i.fas.fa-city]]]
+         [:div.control
+          [:a.button.is-primary
+           {:style {:width "6em"}
+            :on-click #()}
+           "Go!"]]]
+        (when (and (seq matches)
+                   (not (= chosen-city city)))
+          [:div.suggestion-weather
+           (for [x matches]
+             (html
+              [:option.suggestion-weather__city
+               {:key (gensym)
+                :on-click #(let [v (-> % .-target .-value)]
+                             (update-chosen-city v)
+                             (set-field-value "city" v))}
+               (str x)]))])]]
+      [:> code-snippet
+       {:state state}]])))
 
 (defn view [_]
   (let []
@@ -251,7 +355,7 @@
       [:div.demo__reg
        [:div]
        [:> registration nil]]
-      [:div.demo-content-2
-       "heelo"]
+      [:div.demo__weather
+       [:> weather nil]]
       [:div.demo-content-3
        "heelo"]])))

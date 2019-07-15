@@ -26,20 +26,25 @@
         [:i.fab.fa-github]]
        [:span "GitHub"]]]]]))
 
-(defn a [])
-
 (defn body []
   (html
    [:div.home-body
+    [:div "Why fork?"]
     [:div "Focus on the fun bits and leave the rest to Fork."]
     [:div "Fun to use"]
     [:div "Easy to understand"]
     [:div "Extra light"]
     [:div "Built to scale"]
+    [:div "Unbundled from css frameworks"]
+    [:div "Heavily inspired by "
+     [:a {:href "https://jaredpalmer.com/formik/docs/overview"
+          :target "_blank"}
+      "Formik"]]
     [:div "You are one function away from loving forms!"]
     ]))
 [:div.docs__content__fragment
      [:p "Fork was not conceived to work as a full wrapper. In fact, it only provides a set of handy functions to abstract away the complex logic of forms. Let the journey begin!"]]
+
 (defn view []
   (html
    [:div

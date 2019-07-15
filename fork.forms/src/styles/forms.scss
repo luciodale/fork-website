@@ -339,9 +339,9 @@ pre code {
 
 .code-snippet-demo {
     text-align: left;
-    position: relative;
-    margin: auto;
     padding-bottom: 2em;
+    margin: auto;
+    width: 80%;
 }
 
 .demo-content {
@@ -362,7 +362,7 @@ pre code {
     justify-content: center;
 }
 
-.demo__reg__card {
+.demo__card {
     width: 350px;
     text-align: left;
     margin-right: 5em;
@@ -380,8 +380,42 @@ pre code {
 
 .button-inspect {
     margin-top: 2em;
+    text-align: center;
     padding: 0 0 1em;
 }
+
+.demo__weather {
+    width: 100%;
+    text-align: center;
+    padding-top: 3em;
+    min-height: 100vh;
+    background: #00ffff;
+}
+
+.weather__title-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.suggestion-weather {
+    background:  #F6F6F5;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.suggestion-weather__city {
+    padding: 0.3em 0.5em;
+}
+
+.suggestion-weather__city:hover {
+    background-color: #d4d4d4;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+
+
 
 .fixed {
     width: 100px;
@@ -406,9 +440,6 @@ pre code {
 }
 
 @media (max-width: 414px) {
-    .fork-card {
-	width: 95%;
-    }
 
     .fork-form {
         flex-direction: column;
@@ -430,10 +461,13 @@ pre code {
     .fixed-navbar__link:hover {
         color: white;
     }
-
     .code-snippet-demo {
 	width: 100%;
     }
+    .fork-card {
+	width: 95%;
+    }
+
 }
 
 @media (max-width: 800px) {
@@ -481,7 +515,7 @@ pre code {
 	align-items: center;
     }
 
-    .demo__reg__card {
+    .demo__card {
         margin-right: 0em;
     }
 
