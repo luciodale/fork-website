@@ -11,29 +11,6 @@
   (:import
    [goog.async Debouncer]))
 
-(defn cities-http [update-cities update-requested]
-  (update-requested true)
-  (ajax/ajax-request
-   {:uri  "https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json"
-    :method :get
-    :format (ajax/json-request-format)
-    :response-format (ajax/json-response-format)
-    :handler (fn [[resp body]]
-               (update-cities (map (fn [city] (str (city "name")
-                                                   " - "
-                                                   (city "country"))) body))
-               (update-requested false))}))
-
-(def a (atom nil))
-
-  (ajax/ajax-request
-   {:uri  "https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json"
-    :method :get
-    :format (ajax/json-request-format)
-    :response-format (ajax/json-response-format)
-    :handler (fn [[resp body]]
-               (reset! a body))})
-
 (defn debounce [f interval]
   (let [dbnc (Debouncer. f interval)]
     (fn [& args] (.apply (.-fire dbnc) dbnc (to-array args)))))
@@ -269,6 +246,36 @@
       [:> code-snippet
        {:state (:state props)}]])))
 
+(defn weather-description []
+  (html
+   [:div.demo__reg__text.message
+    [:div.message-header
+     [:h4.title {:style {:color "white"
+                         :margin-bottom "0"
+                         :padding "0.2em"}}  "Weather Forecast:"]]
+    [:div.message-body.demo__reg__message-body
+     [:div
+      "Dynamic search with suggestion..."
+      " 128769 cities from https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json"]
+     [:br]
+     [:div [:h5.title "City Value"]]
+     [:div "Fork is used to first set the value from the list of suggested cities, and to pass it to the"
+      " weather forecast api..."]
+     ]]))
+
+(defn cities-http [update-cities update-requested]
+  (update-requested true)
+  (ajax/ajax-request
+   {:uri  "https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json"
+    :method :get
+    :format (ajax/json-request-format)
+    :response-format (ajax/json-response-format)
+    :handler (fn [[resp body]]
+               (update-cities (map (fn [city] (str (city "name")
+                                                   " - "
+                                                   (city "country"))) body))
+               (update-requested false))}))
+
 (defn filter-cities [cities city]
   (when-not (s/blank? city)
     (let [pattern (re-pattern (str "(?i)" city))
@@ -296,7 +303,7 @@
     (html
      [:div.demo-content.content
       [:div.demo__reg__container
-       #_(reg-description)
+       (weather-description)
        [:div.fork-card.demo__card
         [:div.weather__title-group
          [:div.fork-title
