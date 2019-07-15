@@ -354,15 +354,15 @@
           [:div.suggestion-weather
            (for [x matches]
              (html
-              [:option.suggestion-weather__city
-               {:key (gensym)
-                :on-click #(let [v (edn/read-string (-> % .-target .-value))]
-                             (update-chosen-city (v "name"))
-                             (set-values {"city" (v "name")
-                                          "lat" (v "lat")
-                                          "lng" (v "lng")}))
-                :value x}
-               (str (get x "name"))]))])]]
+              (let [city-name (x "name")]
+                [:div.suggestion-weather__city
+                 {:key (gensym)
+                  :on-click #(do
+                               (update-chosen-city city-name)
+                               (set-values {"city" city-name
+                                            "lat" (x "lat")
+                                            "lng" (x "lng")}))}
+                 city-name])))])]]
       [:> code-snippet
        {:state state}]])))
 
