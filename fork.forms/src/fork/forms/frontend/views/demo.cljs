@@ -163,7 +163,6 @@
 (defn reg-handler
   [[response body] {:keys [is-validation-passed?
                            set-waiting-for-server]}]
-  (set-waiting-for-server "email" false)
   (is-validation-passed? (:validation body) :server-email))
 
 (defn reg-server-validation
