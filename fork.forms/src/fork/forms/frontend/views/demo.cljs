@@ -343,11 +343,14 @@
          [:div.control
           [:a.button.is-primary
            {:style {:width "6em"}
-            :disabled (not cities)
+            :disabled (or (not= (s/trim (or chosen-city ""))
+                                (s/trim city))
+                          (not cities))
             :on-click #()}
            "Go!"]]]
         (when (and (seq matches)
-                   (not (= chosen-city city)))
+                   (not= (s/trim (or chosen-city ""))
+                         (s/trim city)))
           [:div.suggestion-weather
            (for [x matches]
              (html
