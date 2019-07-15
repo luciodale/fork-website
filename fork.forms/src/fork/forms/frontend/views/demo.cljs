@@ -256,8 +256,7 @@
                          :padding "0.2em"}}  "Weather Forecast:"]]
     [:div.message-body.demo__reg__message-body
      [:div
-      "Dynamic search with suggestion..."
-      " 128769 cities from https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json"]
+      "Dynamic search with auto completion feature..."]
      [:br]
      [:div [:h5.title "City Value"]]
      [:div "Fork is used to first set the value from the list of suggested cities, and to pass it to the"
@@ -284,19 +283,19 @@
   (when-not (s/blank? city)
     (let [pattern (re-pattern (str "(?i)" city))
           word-count (count city)]
-      (into #{}
-            (take 10
-                  (filter
-                   #(re-matches
-                     pattern
-                     (subs (get % "name") 0 word-count))
-                   cities))))))
+      (->> cities
+           (filter
+            #(re-matches
+              pattern
+              (subs (get % "name") 0 word-count)))
+           (take 15)
+           (into #{})))))
 
 (defn weather [_]
   (let [[cities update-cities] (r/useState nil)
         [requested? update-requested] (r/useState nil)
         [{:keys [state values handle-change
-                 set-field-value] :as props}]
+                 set-values] :as props}]
         (fork/fork
          {:initial-values {"city" ""}
           :prevent-default? true})
@@ -348,15 +347,17 @@
             :on-click #()}
            "Go!"]]]
         (when (and (seq matches)
-                   (not (= (get chosen-city "name") city)))
+                   (not (= chosen-city city)))
           [:div.suggestion-weather
            (for [x matches]
              (html
               [:option.suggestion-weather__city
                {:key (gensym)
                 :on-click #(let [v (edn/read-string (-> % .-target .-value))]
-                             (update-chosen-city v)
-                             (set-field-value "city" (v "name")))
+                             (update-chosen-city (v "name"))
+                             (set-values {"city" (v "name")
+                                          "lat" (v "lat")
+                                          "lng" (v "lng")}))
                 :value x}
                (str (get x "name"))]))])]]
       [:> code-snippet

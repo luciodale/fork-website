@@ -400,8 +400,9 @@ pre code {
 
 .suggestion-weather {
     background:  #F6F6F5;
+    max-height: 10em;
     border-radius: 5px;
-    overflow: hidden;
+    overflow-y: scroll;
 }
 
 .suggestion-weather__city {
