@@ -262,7 +262,8 @@
       " weather forecast api..."]
      ]]))
 
-(defn cities-http [update-cities update-requested]
+(defn cities-http
+  [update-cities update-requested]
   (update-requested true)
   (ajax/ajax-request
    {:uri  "https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json"
@@ -278,7 +279,17 @@
                                       "lng" (city "lng")}) body))
                (update-requested false))}))
 
-(defn filter-cities [cities city]
+(defn weather-http
+  [lat-lng]
+  (ajax/ajax-request
+   {:uri  ""
+    :method :get
+    :format (ajax/json-request-format)
+    :response-format (ajax/json-response-format)
+    :handler (fn [[resp body]])}))
+
+(defn filter-cities
+  [cities city]
   (when-not (s/blank? city)
     (let [pattern (re-pattern (str "(?i)" city))
           word-count (count city)]
