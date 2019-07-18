@@ -361,7 +361,8 @@
         matches (filter-cities cities city)
         [chosen-city update-chosen-city] (r/useState nil)
         [weather update-weather] (r/useState nil)
-        [is-submitting? set-submitting] (r/useState nil)]
+        [is-submitting? set-submitting] (r/useState nil)
+        [city-view update-city-view] (r/useState nil)]
     (html
      [:div.demo-content.content
       [:div.demo__reg__container
@@ -410,6 +411,7 @@
                           (not cities))
             :on-click #(do
                          (update-weather nil)
+                         (update-city-view chosen-city)
                          (set-submitting true)
                          (weather-http
                           set-submitting
@@ -435,7 +437,8 @@
         [:div.
          {:class (when is-submitting?
                    "fork-is-loading")}
-         (when weather (weather-card weather chosen-city))]]]
+         (when weather
+           (weather-card weather city-view))]]]
       [:> code-snippet
        {:state state}]])))
 
