@@ -324,15 +324,13 @@
         [:div "Oops something went wrong!"]
         [:div
          [:div.weather-card__city-icon
-          [:div {:style {:font-size "1.5em"}}
+          [:h5.h-content
            [:i.fas.fa-thermometer-half]
            " " (.toFixed temp) " ° C"]
           [:img
            {:src (str "http://openweathermap.org/img/wn/"
-                      icon "@2x.png")}]
-          [:h2 {:style {:margin-bottom "0"
-                        :margin-top "0"}}
-           city]]
+                      icon "@2x.png")}]]
+         [:h4 {:style {:text-align "center"}} city]
          [:div.weather-card__min-max
           [:h5.h-content
            [:i.fas.fa-thermometer-empty]
@@ -343,7 +341,7 @@
          [:div.weather-card__speed-humidity
           [:h5.h-content
            [:i.fas.fa-wind]
-           [:strong " Wind Speed "] wind]
+           [:strong " Wind "] wind]
           [:h5.h-content
            [:i.fas.fa-tint]
            [:strong " Humidity "] humidity "%"]]])])))
