@@ -1,7 +1,12 @@
-(ns fork.forms.snippets
+(ns fork.forms.web
   (:require
-   [yada.yada :as yada]
-   [integrant.core :as ig]))
+   [aleph.http :as http]
+   [byte-streams :as bs]
+   [cheshire.core :refer [parse-string]]
+   [fork.forms.env :as env]
+   [integrant.core :as ig]
+   [manifold.deferred :as d]
+   [yada.yada :as yada]))
 
 (defn manage-blank
   [coll]
@@ -48,6 +53,7 @@
                :response (fn [ctx]
                            (parse-snippets file))}}}))
 
+;; just for testing
 (defmethod ig/init-key ::server-validation
   [_ _]
   (yada/resource
@@ -80,3 +86,23 @@
                                   (= input "fork@cljs.com"))
                                {:validation false}
                                {:validation true})))}}}))
+
+(defmethod ig/init-key ::weather
+  [_ _]
+  (yada/resource
+   {:id ::weather
+    :methods {:get
+              {:produces ["application/json"]
+               :response (fn [ctx]
+                           (let [lat ((-> ctx :parameters :query) "lat")
+                                 lng ((-> ctx :parameters :query) "lng")]
+                             (d/chain
+                              (http/get
+                               (str "http://api.openweathermap.org/data/2.5/weather"
+                                    "?lat=" lat
+                                    "&lon=" lng
+                                    "&units=metric"
+                                    "&APPID="env/weather-key))
+                              #(:body %)
+                              #(bs/to-string %)
+                              #(parse-string % true))))}}}))

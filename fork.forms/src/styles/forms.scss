@@ -18,6 +18,19 @@ $dark-grey-color: hsl(0, 0%, 15%);
     border-right: 1px solid #CCC;
 }
 
+.fork-is-loading {
+    animation: spinAround 500ms infinite linear;
+    border: 2px solid #dbdbdb;
+    border-radius: 290486px;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    content: "";
+    display: block;
+    height: 3em;
+    margin: auto;
+    position: relative;
+    width: 3em;
+}
 /* for block of code */
 .content table td, .content table th.hljs-ln-code {
     border: none;
@@ -413,6 +426,34 @@ pre code {
     background-color: #d4d4d4;
     cursor: pointer;
     font-weight: 600;
+}
+
+.weather-card__container {
+    margin-top: 1em;
+}
+
+.weather-card__city-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.weather-card__min-max {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.weather-card__speed-humidity {
+    margin-top: 1em;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+h5.h-content {
+    font-weight: 500;
+    margin-bottom: 0;
 }
 
 

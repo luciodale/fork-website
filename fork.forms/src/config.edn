@@ -24,10 +24,10 @@
   [:fork.forms/images :edge.yada.ig/resources] {:path "images"}
   [:fork.forms/styles :edge.yada.ig/resources] {:path "styles"}
   [:edge.yada.ig/resources :fork.forms/assets] {:path "public"}
-  :fork.forms.snippets/docs "docs_code"
-
-  :fork.forms.snippets/server-validation nil
-  :fork.forms.snippets/reg-validation nil
+  :fork.forms.web/docs "docs_code"
+  :fork.forms.web/weather nil
+  :fork.forms.web/server-validation nil
+  :fork.forms.web/reg-validation nil
 
   :edge.yada.ig/listener {:handler #ig/ref :edge.bidi.ig/vhost
                           :port #long #or [#env PORT 5454]}
@@ -39,9 +39,10 @@
                           ["/scripts" #ig/ref [:fork.forms/scripts :edge.yada.ig/resources]]
                           ["/images" #ig/ref [:fork.forms/images :edge.yada.ig/resources]]
                           ["/styles" #ig/ref [:fork.forms/styles :edge.yada.ig/resources]]
-                          ["/snippets" #ig/ref :fork.forms.snippets/docs]
-                          ["/validation" #ig/ref :fork.forms.snippets/server-validation]
-                          ["/reg-validation" #ig/ref :fork.forms.snippets/reg-validation]
+                          ["/snippets" #ig/ref :fork.forms.web/docs]
+                          ["/validation" #ig/ref :fork.forms.web/server-validation]
+                          ["/reg-validation" #ig/ref :fork.forms.web/reg-validation]
+                          ["/weather" #ig/ref :fork.forms.web/weather]
                           [true #ig/ref [:fork.forms/index :edge.yada.ig/classpath-name]]]]]]}
 
  :ig.system/dev

@@ -280,13 +280,18 @@
                (update-requested false))}))
 
 (defn weather-http
-  [lat-lng]
+  [set-submitting update-weather lat lng]
   (ajax/ajax-request
-   {:uri  ""
+   {:uri  (str "/weather?"
+               "lat=" lat
+               "&lng=" lng)
     :method :get
-    :format (ajax/json-request-format)
+    :format (ajax/transit-request-format)
     :response-format (ajax/json-response-format)
-    :handler (fn [[resp body]])}))
+    :handler (fn [[ok body]]
+               (set-submitting false)
+               (update-weather
+                (if ok body :error)))}))
 
 (defn filter-cities
   [cities city]
@@ -301,10 +306,54 @@
            (take 15)
            (into #{})))))
 
+(defn weather-card
+  [data city]
+  (html
+   (let [main (get data "main")
+         weather (first (get data "weather"))
+         temp (get main "temp")
+         pressure (get main "pressure")
+         humidity (get main "humidity")
+         min (get main "temp_min")
+         max (get main "temp_max")
+         wind (get (get data "wind") "speed")
+         description (get weather "description")
+         icon (get weather "icon")]
+     [:div.weather-card__container
+      (if (:error data)
+        [:div "Oops something went wrong!"]
+        [:div
+         [:div.weather-card__city-icon
+          [:div {:style {:font-size "1.5em"}}
+           [:i.fas.fa-thermometer-half]
+           " " (.toFixed temp) " ° C"]
+          [:img
+           {:src (str "http://openweathermap.org/img/wn/"
+                      icon "@2x.png")}]
+          [:h2 {:style {:margin-bottom "0"
+                        :margin-top "0"}}
+           city]]
+         [:div.weather-card__min-max
+          [:h5.h-content
+           [:i.fas.fa-thermometer-empty]
+           [:strong " Min "] (.toFixed min) " °C"]
+          [:h5.h-content
+           [:i.fas.fa-thermometer-full]
+           [:strong " Max "](.toFixed max) " °C"]]
+         [:div.weather-card__speed-humidity
+          [:h5.h-content
+           [:i.fas.fa-wind]
+           [:strong " Wind Speed "] wind]
+          [:h5.h-content
+           [:i.fas.fa-tint]
+           [:strong " Humidity "] humidity "%"]]])])))
+
+
 (defn weather [_]
   (let [[cities update-cities] (r/useState nil)
         [requested? update-requested] (r/useState nil)
-        [{:keys [state values handle-change
+        [{:keys [state values
+                 handle-change
                  set-values] :as props}]
         (fork/fork
          {:initial-values {"city" ""}
@@ -312,7 +361,9 @@
         [is-clicked? update-is-clicked] (r/useState "")
         city (values "city")
         matches (filter-cities cities city)
-        [chosen-city update-chosen-city] (r/useState nil)]
+        [chosen-city update-chosen-city] (r/useState nil)
+        [weather update-weather] (r/useState nil)
+        [is-submitting? set-submitting] (r/useState nil)]
     (html
      [:div.demo-content.content
       [:div.demo__reg__container
@@ -335,7 +386,7 @@
                                        update-requested)))}
           (if cities
             (str (count cities) " " "Cities!")
-            "Download Cities")]]
+            "Get Cities")]]
         [:div.is-divider.fork-divider]
 
         [:div.field.has-addons
@@ -343,6 +394,7 @@
           {:style {:width "100%"}}
           [:input.input
            {:name "city"
+            :auto-complete "off"
             :disabled (not cities)
             :placeholder "Malibu"
             :type "text"
@@ -355,8 +407,17 @@
            {:style {:width "6em"}
             :disabled (or (not= (s/trim (or chosen-city ""))
                                 (s/trim city))
+                          (s/blank? city)
+                          is-submitting?
                           (not cities))
-            :on-click #()}
+            :on-click #(do
+                         (update-weather nil)
+                         (set-submitting true)
+                         (weather-http
+                          set-submitting
+                          update-weather
+                          (values "lat")
+                          (values "lng")))}
            "Go!"]]]
         (when (and (seq matches)
                    (not= (s/trim (or chosen-city ""))
@@ -372,7 +433,11 @@
                              (set-values {"city" city-name
                                           "lat" (x "lat")
                                           "lng" (x "lng")}))}
-               city-name]))])]]
+               city-name]))])
+        [:div.
+         {:class (when is-submitting?
+                   "fork-is-loading")}
+         (when weather (weather-card weather chosen-city))]]]
       [:> code-snippet
        {:state state}]])))
 
