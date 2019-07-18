@@ -328,7 +328,7 @@
            [:i.fas.fa-thermometer-half]
            " " (.toFixed temp) " ° C"]
           [:img
-           {:src (str "http://openweathermap.org/img/wn/"
+           {:src (str "https://openweathermap.org/img/wn/"
                       icon "@2x.png")}]]
          [:h4 {:style {:text-align "center"}} city]
          [:div.weather-card__min-max
