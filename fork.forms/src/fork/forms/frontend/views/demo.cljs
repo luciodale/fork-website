@@ -255,12 +255,15 @@
                          :padding "0.2em"}}  "Weather Forecast:"]]
     [:div.message-body.demo__reg__message-body
      [:div
-      "Dynamic search with auto completion feature..."]
+      "This second example presents a Fork input that auto completes to help the user retrieve the weather for a given city."]
      [:br]
-     [:div [:h5.title "City Value"]]
-     [:div "Fork is used to first set the value from the list of suggested cities, and to pass it to the"
-      " weather forecast api..."]
-     ]]))
+     [:div [:h5.title "City value:"]]
+     [:div "In this instance, the Fork handlers that come in handy are " [:strong "values"] " and " [:strong "set-values"]"."
+      " After fetching a JSON object containing the world cities, Fork is used to store the chosen city along with its coordinates."
+      " Upon clicking the \"Go!\" button, the coordinates are sent to the server to get the weather information."]
+     [:br]
+     [:div "As Fork does not force the developer to use strict patterns, it can be adopted for simpler implementations as well."
+      " In fact, its modularity allows the discarding of form submission and validation and lets you use just what you need."]]]))
 
 (defn cities-http
   [update-cities update-requested]
@@ -326,7 +329,7 @@
          [:div.weather-card__city-icon
           [:h5.h-content
            [:i.fas.fa-thermometer-half]
-           " " (.toFixed temp) " ° C"]
+           " " (some-> (.toFixed temp)) " ° C"]
           [:img
            {:src (str "https://openweathermap.org/img/wn/"
                       icon "@2x.png")}]]
@@ -334,10 +337,10 @@
          [:div.weather-card__min-max
           [:h5.h-content
            [:i.fas.fa-thermometer-empty]
-           [:strong " Min "] (.toFixed min) " °C"]
+           [:strong " Min "] (some-> (.toFixed min)) " °C"]
           [:h5.h-content
            [:i.fas.fa-thermometer-full]
-           [:strong " Max "](.toFixed max) " °C"]]
+           [:strong " Max "](some-> (.toFixed max)) " °C"]]
          [:div.weather-card__speed-humidity
           [:h5.h-content
            [:i.fas.fa-wind]
@@ -354,8 +357,7 @@
                  handle-change
                  set-values] :as props}]
         (fork/fork
-         {:initial-values {"city" ""}
-          :prevent-default? true})
+         {:initial-values {"city" ""}})
         [is-clicked? update-is-clicked] (r/useState "")
         city (values "city")
         matches (filter-cities cities city)
