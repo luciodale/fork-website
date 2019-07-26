@@ -6,6 +6,7 @@
                         :target "public/forms.css"}]}
   :kick/figwheel-main {:builds [{:id "app"
                                  :main fork.forms.frontend.main
+                                 :devcards true
                                  :output-to "public/frontend.js"
                                  :output-dir "public/frontend.out"
                                  :asset-path "/assets/frontend.out"
@@ -15,11 +16,13 @@
                                  :closure-defines
                                  {}}]
                        :figwheel-config
-                       {:ring-server-options
-                        {:port 8900}}}}
+                       {:ring-server-options {:port 8900}
+                        :extra-main-files {:devcards
+                                           {:main fork.forms.frontend.devcards.main}}}}}
 
  :ig.system/base
  {[:edge.yada.ig/classpath-name :fork.forms/index] {:name "index.html"}
+  [:edge.yada.ig/classpath-name :fork.forms/devcards] {:name "devcards.html"}
   [:fork.forms/scripts :edge.yada.ig/resources] {:path "scripts"}
   [:fork.forms/images :edge.yada.ig/resources] {:path "images"}
   [:fork.forms/styles :edge.yada.ig/resources] {:path "styles"}
@@ -35,6 +38,7 @@
                                   :prod "https://forkcljs.herokuapp.com"}
                         [""
                          [
+                          ["/devcards" #ig/ref [:fork.forms/devcards :edge.yada.ig/classpath-name]]
                           ["/assets" #ig/ref [:fork.forms/assets :edge.yada.ig/resources]]
                           ["/scripts" #ig/ref [:fork.forms/scripts :edge.yada.ig/resources]]
                           ["/images" #ig/ref [:fork.forms/images :edge.yada.ig/resources]]
