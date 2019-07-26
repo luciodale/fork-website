@@ -147,28 +147,27 @@
 
 (defn easy-submit
   [{:keys [class]}
-   {{:keys [is-submitting?
+   {{:keys [submitting?
             submit-count
-            is-invalid?]} :props}]
+            invalid?]} :props}]
   (html
    [:button.button
     {:type "submit"
      :class (str class " "
-                 (when is-submitting?
+                 (when submitting?
                    "is-loading"))
-     :disabled (and is-invalid?
+     :disabled (and invalid?
                     (> submit-count 0))}
     "Submit"]))
 
 (defn reg-handler
-  [[response body] {:keys [is-validation-passed?
-                           set-waiting-for-server]}]
-  (is-validation-passed? (:validation body) :server-email))
+  [[response body] {:keys [set-valid]}]
+  (set-valid (:validation body)))
 
 (defn reg-server-validation
-  [{:keys [values errors set-waiting-for-server] :as props}]
+  [{:keys [values errors set-waiting] :as props}]
   (if (:client-email (get errors "email"))
-    (set-waiting-for-server "email" false)
+    (set-waiting "email" false)
     (ajax/ajax-request
      {:uri  "/reg-validation"
       :method :post
@@ -179,9 +178,9 @@
 
 (defn reg-on-submit
   [{:keys [set-submitting
-           values is-invalid?]}]
+           values invalid?]}]
   (set-submitting false)
-  (when-not is-invalid?
+  (when-not invalid?
     (js/alert values)))
 
 (defn reg-validation
@@ -190,18 +189,20 @@
    {:on-change
     {"email"
      [[(re-matches #".+@.+" (s/trim (values "email")))
-       {:client-email "Must be an email"}]]
+       :client-email "Must be an email"]]
      "password"
      [[(> (count (values "password")) 6)
-       {:err "Must be longer than 6 chars"}]]
+       :err "Must be longer than 6 chars"]]
      "re-password"
      [[(= (values "password")
           (values "re-password"))
-       {:err "Must match password"}]]}}
+       :err "Must match password"]]}}
    :server
    {:on-change
     {"email"
-     [[reg-server-validation {:server-email "Your email is already taken!"}]]}}})
+     [[reg-server-validation
+       :server-email
+       "Your email is already taken!"]]}}})
 
 (defn registration [_]
   (let [[props]
@@ -211,15 +212,11 @@
                            "re-password" ""}
           :prevent-default? true
           :validation reg-validation
-          :on-submit reg-on-submit})
-        _ (r/useEffect (fn []
-                         (when (clojure.string/blank? ((:values props) "email"))
-                           ((:clear-input-errors props) "email"))
-                         identity)
-                       #js [(:values props)])]
+          :on-submit reg-on-submit})]
     (html
      [:div.demo-content.content
       [:div.demo__reg__container
+       #_(cljs.pprint/pprint (:state props))
        (reg-description)
        [:form.fork-card.demo__card
         {:on-submit (:handle-submit props)}
@@ -358,12 +355,11 @@
                  set-values] :as props}]
         (fork/fork
          {:initial-values {"city" ""}})
-        [is-clicked? update-is-clicked] (r/useState "")
         city (values "city")
         matches (filter-cities cities city)
         [chosen-city update-chosen-city] (r/useState nil)
         [weather update-weather] (r/useState nil)
-        [is-submitting? set-submitting] (r/useState nil)
+        [submitting? set-submitting] (r/useState nil)
         [city-view update-city-view] (r/useState nil)]
     (html
      [:div.demo-content.content
@@ -409,7 +405,7 @@
             :disabled (or (not= (s/trim (or chosen-city ""))
                                 (s/trim city))
                           (s/blank? city)
-                          is-submitting?
+                          submitting?
                           (not cities))
             :on-click #(do
                          (update-weather nil)
@@ -437,7 +433,7 @@
                                           "lng" (x "lng")}))}
                city-name]))])
         [:div.
-         {:class (when is-submitting?
+         {:class (when submitting?
                    "fork-is-loading")}
          (when weather
            (weather-card weather city-view))]]]

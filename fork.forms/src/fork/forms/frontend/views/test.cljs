@@ -4,21 +4,21 @@
   (:require
    [ajax.core :as ajax]
    [fork.fork :as fork]
+   [fork.logic :as logic]
    [react :as r]))
 
 (defn handler
-  [[response body] values is-validation-passed?]
-  (is-validation-passed?
-   (:validation body) :err))
+  [[response body] values set-valid]
+  (set-valid (:validation body)))
 
 (defn server-validation
-  [{:keys [values is-invalid? is-validation-passed?]}]
+  [{:keys [values set-valid]}]
   (ajax/ajax-request
    {:uri  "/validation"
     :method :post
     :params
     {:input (get values "two")}
-    :handler #(handler % values is-validation-passed?)
+    :handler #(handler % values set-valid)
     :format  (ajax/transit-request-format)
     :response-format (ajax/transit-response-format)}))
 
@@ -27,52 +27,51 @@
    {:on-change
     {"one"
      [[(not (clojure.string/blank? (values "one")))
-       {:err "Error message on change client"}]]}}
+       :err "Error message on change client"]]}}
    :server
    {:on-change
     {"two"
-     [[server-validation {:err "Error message server"}]]}}})
+     [[server-validation :err "Error message server"]]}}})
 
 (def fn-count (atom #{}))
 
 (defn on-submit
-  [{:keys [set-submitting
-               is-invalid?
-               values is-waiting? errors]}]
-  (prn "is-invalid?" is-invalid?)
+  [{:keys [set-submitting invalid?
+           values waiting? errors]}]
+  (prn "is-invalid?" invalid?)
   (prn "errors:" errors)
-  (if is-invalid?
+  (if invalid?
     (do "is invalid!!"
-       (set-submitting false))
+        (set-submitting false))
     (do
       (js/alert values)
       (set-submitting false)))
   )
 
 #_(defn view [_]
-  (let [[c1 set-c1] (r/useState 0)
-        [c2 set-c2] (r/useState 0)
-        inc1 (r/useCallback (fn [] (set-c1 inc)) #js [c1])
-        inc2 (r/useCallback (fn [] (set-c2 inc)) #js [c2])]
-    (swap! fn-count conj inc1)
-    (swap! fn-count conj inc2)
-    (html
-     [:div {:style
-            {:margin-top "100px"}}
-      [:div (str "Counter 1 is" c1)]
-      [:div (str "Counter 2 is" c2)]
-      [:br]
-      [:button {:on-click inc1} "Inc 1"]
-      [:button {:on-click inc2} "Inc 2"]
-      [:br]
-      [:div "Newly created fns:" (- (count @fn-count) 2)]])))
+    (let [[c1 set-c1] (r/useState 0)
+          [c2 set-c2] (r/useState 0)
+          inc1 (r/useCallback (fn [] (set-c1 inc)) #js [c1])
+          inc2 (r/useCallback (fn [] (set-c2 inc)) #js [c2])]
+      (swap! fn-count conj inc1)
+      (swap! fn-count conj inc2)
+      (html
+       [:div {:style
+              {:margin-top "100px"}}
+        [:div (str "Counter 1 is" c1)]
+        [:div (str "Counter 2 is" c2)]
+        [:br]
+        [:button {:on-click inc1} "Inc 1"]
+        [:button {:on-click inc2} "Inc 2"]
+        [:br]
+        [:div "Newly created fns:" (- (count @fn-count) 2)]])))
 
 (defn view [_]
   (let [[{:keys [values
                  state
                  errors
-                 is-invalid?
-                 is-submitting?
+                 invalid?
+                 submitting?
                  handle-change
                  set-values
                  handle-submit
@@ -117,5 +116,5 @@
            msg])]
        [:button.button
         {:type "submit"
-         :class (when is-submitting? "is-loading")}
+         :class (when submitting? "is-loading")}
         "My Submit button"]]])))

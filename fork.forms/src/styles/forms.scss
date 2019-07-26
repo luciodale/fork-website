@@ -53,7 +53,7 @@ pre code {
 .pre-inline {
     background-color: #f8f8f8;
     margin: 0 0.5em;
-    white-space: nowrap;
+
 }
 
 .pre-inline-no-left {
@@ -104,7 +104,7 @@ pre code {
 }
 
 .message-header {
-    background: $black-color;
+    background: #bbc3cc;
 }
 
 .code-snippet__copy {
@@ -367,7 +367,7 @@ pre code {
     text-align: center;
     padding-top: calc(64px + 3em);
     min-height: 100vh;
-    background: hsl(340, 83%, 38%);
+    background: #d5dfdf;
 }
 
 .demo__reg__container {
@@ -402,7 +402,7 @@ pre code {
     text-align: center;
     padding-top: 3em;
     min-height: 100vh;
-    background: #00ffff;
+    background: #d5dfdf;
 }
 
 .weather__title-group {

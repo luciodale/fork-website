@@ -32,7 +32,7 @@
            handle-change
            handle-blur
            handle-submit
-           is-submitting?]}]
+           submitting?]}]
         (f/fork {:initial-values
                  {"input" "Type here!"}
                  :prevent-default? true
@@ -47,7 +47,7 @@
        :on-blur handle-blur}]
      [:button
       {:type "submit"
-       :disabled is-submitting?}
+       :disabled submitting?}
       "Submit!"]]))
 
 
@@ -57,11 +57,11 @@
    {:on-change
     {"input"
      [[(> (count (values "input")) 5)
-       {:smaller-than-5
-        "Must be bigger than 5"}]
+       :smaller-than-5
+       "Must be bigger than 5"]
       [(= (values "input") "hello fork!")
-       {:must-equal-text
-        "Must equal hello fork!"}]]}}})
+       :must-equal-text
+       "Must equal hello fork!"]]}}})
 
 
 (defn component []
@@ -72,7 +72,7 @@
            handle-change
            handle-blur
            handle-submit
-           is-submitting?]}]
+           submitting?]}]
         (f/fork {:initial-values
                  {"input" "Type here!"}
                  :prevent-default? true
@@ -93,14 +93,14 @@
           msg]))
      [:button
       {:type "submit"
-       :disabled is-submitting?}
+       :disabled submitting?}
       "Submit!"]]))
 
 
 (defn on-submit
-  [{:keys [values set-submitting is-invalid?]}]
+  [{:keys [values set-submitting invalid?]}]
   (set-submitting false)
-  (when-not is-invalid?
+  (when-not invalid?
     (js/alert values)))
 
 

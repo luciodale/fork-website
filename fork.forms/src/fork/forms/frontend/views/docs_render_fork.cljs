@@ -139,7 +139,7 @@
     [:div.docs__content__fragment
      [:p "Take a moment to look at what's new."
       " First we destructured two extra handlers, being" (c "handle-submit")
-      "and" (c "is-submitting?" :no-right) "."
+      "and" (c "submitting?" :no-right) "."
       " Then," (c "handle-submit") "was specified to be the" [:strong " on-submit "] "action"
       " for the form component."
       " Last, a simple button was added right at the end of the form."]]
@@ -158,7 +158,7 @@
                   handle-change
                   handle-blur
                   handle-submit
-                  is-submitting?]}]
+                  submitting?]}]
          (fork/fork {:initial-values
                      {"input" "Type here!"}
                      :prevent-default? true
@@ -177,7 +177,7 @@
        [:div
         [:button.button.is-success.fork-button-docs
          {:type "submit"
-          :disabled is-submitting?}
+          :disabled submitting?}
          "Submit!"]]]])))
 
 (defn description-0-2-0 []
@@ -206,7 +206,7 @@
       [:strong " multiple checks "] "per field. "]]
     [:div.docs__content__fragment
      [:p
-      " Build your logic at index 0 and pass your error map at index 1."
+      " Build your logic at index 0 and pass your error keyword and message at index 1 and 2, respectively."
       " Keep in mind that each error is added whenever your logic returns"
       (c "false") "or" (c "nil" :no-right) "."]]]))
 
@@ -235,7 +235,7 @@ to display the errors only after the" [:strong " on-blur "] "effect has been fir
   (html
    [:div
     [:div.docs__content__fragment
-     [:p "Oh no! If you noticed, the input can be submitted even when errors are detected. You can solve this issue by using" (c "is-invalid?") "in your submit handler. This is how:"]]]))
+     [:p "Oh no! If you noticed, the input can be submitted even when errors are detected. You can solve this issue by using" (c "invalid?") "in your submit handler. This is how:"]]]))
 
 (defn description-0-2-4 []
   (html
@@ -249,18 +249,17 @@ to display the errors only after the" [:strong " on-blur "] "effect has been fir
    {:on-change
     {"input"
      [[(> (count (values "input")) 5)
-       {:smaller-than-5
-        "Must be bigger than 5"}]
+       :smaller-than-5
+       "Must be bigger than 5"]
       [(= (values "input") "hello fork!")
-       {:must-equal-text
-        "Must equal \"hello fork!\""}]]}}})
+       :must-equal-text
+       "Must equal \"hello fork!\""]]}}})
 
 (defn on-submit-0-2-1
   [{:keys [values set-submitting
-           is-invalid?]}]
+           invalid?]}]
   (set-submitting false)
-  (prn is-invalid?)
-  (when-not is-invalid?
+  (when-not invalid?
     (js/alert values)))
 
 (defn fork-code-0-2-0
@@ -272,7 +271,7 @@ to display the errors only after the" [:strong " on-blur "] "effect has been fir
                  handle-change
                  handle-blur
                  handle-submit
-                 is-submitting?]}]
+                 submitting?]}]
         (fork/fork {:initial-values
                     {"input" "Type here!"}
                     :prevent-default? true
@@ -301,8 +300,79 @@ to display the errors only after the" [:strong " on-blur "] "effect has been fir
        [:div
         [:button.button.is-success.fork-button-docs
          {:type "submit"
-          :disabled is-submitting?}
+          :disabled submitting?}
          "Submit!"]]]])))
+
+
+(defn api-params []
+  (html
+   [:div
+    [:div.docs__content__fragment
+     "It all starts with "
+     (c "(fork { ... })" :no-right) "."
+     " Call it in a "[:strong"let"]" and give it the following parameters."]]))
+
+(defn api-initial-values []
+  (html
+   [:div
+    [:div.docs__content__fragment
+     "A way to let Fork know of your form input names and their initial values."
+     " If your use case does not require defined initial values, you still have to initialize them with empty strings."
+     [:br] " Example:" [:br]
+     (c (str"{\"input\" \"initial-value\" "
+            "\"sec-input\" \"\"}")
+        :no-left)]]))
+
+(defn api-on-submit []
+  (html
+   [:div
+    [:div.docs__content__fragment
+     "Define a function which takes one map as parameter and give it to Fork through the"
+     (c ":on-submit")"key."
+     " This function is called when you submit your form, so all the related logic should go in here."]]))
+
+(defn api-prevent-default []
+  (html
+   [:div
+    [:div.docs__content__fragment
+     "If you do not want your form to be submitted automatically to your server, you can use this option and pass false."]]))
+
+(defn api-validation []
+  (html
+   [:div
+    [:div.docs__content__fragment
+     "Define a function that takes one parameter, being the values of your form. This function has to return a map that follows the following rules:"
+     [:ul
+      [:li "nannr"]]]]))
+
+(defn api-state []
+  (html
+   [:div
+    [:div.docs__content__fragment
+     "A map coming straight from react. All the fork logic is organized in here. "]]))
+
+(defn api-update-state []
+  (html
+   [:div
+    [:div.docs__content__fragment
+     "Handler to manually update the fork state. You should never use this unless you truly know what you are doing."]]))
+
+(defn api-values []
+  (html
+   [:div
+    [:div.docs__content__fragment
+     "A map with all your form values organized by name. "
+     "An example would be:"
+     (c "{\"my-input-name\" \"input-value\"}"
+        :no-right) "."]]))
+
+(defn api-errors []
+  (html
+   [:div
+    [:div.docs__content__fragment
+     "A map with the input errors."
+     " "]]))
+
 
 (defn description-0-2-5 []
   (html
