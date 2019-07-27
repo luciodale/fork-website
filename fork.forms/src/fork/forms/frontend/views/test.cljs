@@ -4,7 +4,7 @@
   (:require
    [ajax.core :as ajax]
    [fork.fork :as fork]
-   [fork.logic :as logic]
+   [fork.hooks :as hooks]
    [react :as r]))
 
 (defn handler

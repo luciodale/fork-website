@@ -215,6 +215,10 @@
           :on-submit reg-on-submit})]
     (html
      [:div.demo-content.content
+      (prn (:state props))
+      (when (= "aaa" ((:values props) "email"))
+        ((:set-values props) {"email" "whatever"
+                              "password" "not"}))
       [:div.demo__reg__container
        #_(cljs.pprint/pprint (:state props))
        (reg-description)
