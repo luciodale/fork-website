@@ -1,10 +1,10 @@
 {:paths ["src"]
  :deps
- {cljs-ajax {:mvn/version "0.8.0"}
+ {fork/fork {:local/root "../lib/fork"}
+  cljs-ajax {:mvn/version "0.8.0"}
   cljsjs/react {:mvn/version "16.8.6-0"}
   cljsjs/react-dom {:mvn/version "16.8.6-0"}
   devcards {:mvn/version "0.2.6"}
-  fork/fork {:local/root "../lib/fork"}
   hicada {:mvn/version "0.1.8"}
   integrant {:mvn/version "0.7.0"}
   juxt.edge/bidi.ig {:local/root "../lib/edge.ig.bidi"}
