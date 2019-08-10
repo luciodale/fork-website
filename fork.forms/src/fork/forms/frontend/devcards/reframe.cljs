@@ -48,7 +48,9 @@
              (values "list")))}}})
 
 (defn multiple
-  [{:keys [handle-change handle-blur add delete values array-key] :as props}
+  [{:keys [handle-change handle-blur
+           input-array-errors
+           add delete values array-key] :as props}
    {:keys [one two]}]
   [:div
    (map
@@ -62,11 +64,7 @@
           :value (value one)
           :on-change #(handle-change % idx)
           :on-blur #(handle-blur % idx)}]
-        (for [[k error] (f/input-array-errors
-                         props
-                         {:idx idx
-                          :input-key one
-                          :error-keys [(str one idx) (str "foo1" idx)]})]
+        (for [[k error] (input-array-errors idx one [(str one idx) (str "foo1" idx)])]
           ^{:key k}
           [:div
            [:p.help error]])]
@@ -77,11 +75,7 @@
           :value (value two)
           :on-change #(handle-change % idx)
           :on-blur #(handle-blur % idx)}]
-        (for [[k error] (f/input-array-errors
-                         props
-                         {:idx idx
-                          :input-key two
-                          :error-keys [(str two idx)]})]
+        (for [[k error] (input-array-errors idx two [(str two idx)])]
           ^{:key k}
           [:div
            [:p.help error]])]
