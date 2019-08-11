@@ -32,9 +32,27 @@
  (fn [db _]
    db))
 
+(rf/reg-event-db
+ :mock-response
+ (fn [db [_ value]]
+   (prn value)
+   (if (= value "hello")
+     (-> db
+         (f/set-waiting :path "list" false)
+         (f/assoc-server-errors :path ["list" "key"] "message per dio"))
+     (-> db
+         (f/set-waiting :path "list" false)
+         (f/dissoc-server-errors :path ["list" "key"])))))
+
+(rf/reg-event-fx
+ :server-validation
+ (fn [{db :db} [_ {:keys [input errors values path] :as props}]]
+   {:db (assoc-in db [path :waiting? input] true)
+    :dispatch [:mock-response (get-in values ["list" 0 "foo"])]}))
+
 (defn validation [values]
-  {:client
-   {:on-change
+  {:client {}
+   #_{:on-change
     {"one"
      [[(= (values "one") "heyy") :a "yo"]
       [(= (values "one") "heyy") :b "dkk"]]
@@ -45,7 +63,10 @@
                [[(not (empty? foo)) (str "foo" idx) "Foo can't be empty"]
                 [(= "aia" foo) (str "foo1" idx) "aia can't be empty"]
                 [(not (empty? bar)) (str "bar" idx) "Bar can't be empty"]])
-             (values "list")))}}})
+             (values "list")))}}
+   :server
+   {:on-change
+    {"list" #(rf/dispatch [:server-validation %])}}})
 
 (defn multiple
   [{:keys [handle-change handle-blur
@@ -87,29 +108,6 @@
     {:on-click add}
     "add +"]])
 
-(defn simple
-  [{:keys [handle-change handle-blur add delete values input-key errors touched]}]
-  [:div(map
-        (fn [[idx value]]
-          ^{:key idx}
-          [:div
-           [:div
-            [:input.input
-             {:value value
-              :on-change #(handle-change % idx)
-              :on-blur #(handle-blur % idx)}]
-            (let [error (get-in errors [input-key idx])]
-              (when (and (or (get-in touched [input-key idx]) (true? (get touched input-key)))
-                         error)
-                [:p.help error]))]
-           [:button.button
-            {:on-click #(delete % idx)}
-            "remove -"]])
-        (get values input-key))
-   [:button.button
-    {:on-click add}
-    "add +"]])
-
 (defn pprint-str
   [x]
   (with-out-str (pprint x)))
@@ -135,12 +133,15 @@
     (fn [{:keys [values errors submitting?
                  submit-count handle-change
                  handle-blur handle-submit
-                 state] :as props}]
+                 waiting? state] :as props}]
       [:div
-       [:div "state: "
+       [:div "local: "
         [pprint-code @state]]
+       [:div "global: "
+        [pprint-code @(rf/subscribe [:db])]]
        [:form
         {:on-submit handle-submit}
+        (prn errors)
         #_[f/input props
          {:name "one"
           :label "Hello"
@@ -157,15 +158,15 @@
           :component multiple
           :args {:one "foo"
                  :two "bar"}}]
-        #_[f/input-array props
-         {:name "simple"
-          :component simple}]
         #_[f/checkbox props
          {:name "new"
           :text "yo braa"}]
         [:button.button
-         {:type "submit"}
-         "click me "]
+         {:type "submit"
+          :disabled (or waiting?
+                        submitting?
+                        errors)}
+         "click me"]
         (when-let [err (get errors :server)]
           [:div err])]])]])
 
