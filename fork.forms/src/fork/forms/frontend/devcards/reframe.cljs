@@ -21,52 +21,29 @@
  [(f/on-submit :path)]
  (fn [{db :db} [_ props]]
    (if (:errors props)
-     {:db (-> db
-              (f/set-submitting :path false)
-              (f/set-external-errors :path {:server "error"}))}
+     {:db (f/set-submitting db :path false)}
      {:db db
       :dispatch-later [{:ms 1000 :dispatch [:http-response]}]})))
 
 (rf/reg-event-db
  :http-response
  (fn [db _]
-   db))
-
-(rf/reg-event-db
- :mock-response
- (fn [db [_ value]]
-   (prn value)
-   (if (= value "hello")
-     (-> db
-         (f/set-waiting :path "list" false)
-         (f/assoc-server-errors :path ["list" "key"] "message per dio"))
-     (-> db
-         (f/set-waiting :path "list" false)
-         (f/dissoc-server-errors :path ["list" "key"])))))
-
-(rf/reg-event-fx
- :server-validation
- (fn [{db :db} [_ {:keys [input errors values path] :as props}]]
-   {:db (assoc-in db [path :waiting? input] true)
-    :dispatch [:mock-response (get-in values ["list" 0 "foo"])]}))
+   (js/alert "submitted!!")
+   (-> db
+       (f/set-submitting :path false)
+       (f/set-external-errors :path {:server "error"}))))
 
 (defn validation [values]
-  {:client {}
-   #_{:on-change
-    {"one"
-     [[(= (values "one") "heyy") :a "yo"]
-      [(= (values "one") "heyy") :b "dkk"]]
-     "list"
+  {:client
+   {:on-change
+    {"list"
      (apply concat
             (map
              (fn [[idx {:strs [foo bar]}]]
                [[(not (empty? foo)) (str "foo" idx) "Foo can't be empty"]
                 [(= "aia" foo) (str "foo1" idx) "aia can't be empty"]
                 [(not (empty? bar)) (str "bar" idx) "Bar can't be empty"]])
-             (values "list")))}}
-   :server
-   {:on-change
-    {"list" #(rf/dispatch [:server-validation %])}}})
+             (values "list")))}}})
 
 (defn multiple
   [{:keys [handle-change handle-blur
@@ -85,7 +62,9 @@
           :value (value one)
           :on-change #(handle-change % idx)
           :on-blur #(handle-blur % idx)}]
-        (for [[k error] (input-array-errors idx one [(str one idx) (str "foo1" idx)])]
+        (for [[k error] (input-array-errors
+                         idx one
+                         ["key" (str one idx) (str "foo1" idx)])]
           ^{:key k}
           [:div
            [:p.help error]])]
@@ -133,7 +112,7 @@
     (fn [{:keys [values errors submitting?
                  submit-count handle-change
                  handle-blur handle-submit
-                 waiting? state] :as props}]
+                 state] :as props}]
       [:div
        [:div "local: "
         [pprint-code @state]]
@@ -141,7 +120,6 @@
         [pprint-code @(rf/subscribe [:db])]]
        [:form
         {:on-submit handle-submit}
-        (prn errors)
         #_[f/input props
          {:name "one"
           :label "Hello"
@@ -163,9 +141,9 @@
           :text "yo braa"}]
         [:button.button
          {:type "submit"
-          :disabled (or waiting?
-                        submitting?
-                        errors)}
+          :disabled (or (and (seq (dissoc errors :server))
+                             (> submit-count 0))
+                        submitting?)}
          "click me"]
         (when-let [err (get errors :server)]
           [:div err])]])]])
