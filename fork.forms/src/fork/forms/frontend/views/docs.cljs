@@ -4,7 +4,7 @@
   (:require
    [fork.forms.frontend.views.common :as common]
    [fork.forms.frontend.views.docs-render-fork :as render-fork]
-   [fork.fork :as fork]
+   [fork.forkh :as fork]
    [react :as r]))
 
 (defn legend-group
